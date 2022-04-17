@@ -1,6 +1,6 @@
 # Crie suas salas e converse com amigos
 
-Este projecto foi criado seguindo as orientações do ## Diego da Rocktseat
+Este projecto foi criado seguindo as orientações do Diego da Rocktseat
 
 ## Scripts disponíveis
 
@@ -15,3 +15,4 @@ Abra [http://localhost:3000](http://localhost:3000) para ver no Browser.
 ### Tecnologias utilizadas
  - TypScript
  - Sass
+ - HTML
