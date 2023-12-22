@@ -1,17 +1,10 @@
-import { Home } from "./pages/Home";
-import { NewRom } from "./pages/NewRom";
-import { Routes, Route } from "react-router-dom";
-import { AuthContextProvider } from "./contexts/AuthContext";
+import { ChakraProvider } from '@chakra-ui/react'
+import { MasterMenuRoutes } from './app/routes/Routes';
 
-function App() {
+export const App = () => {
   return (
-    <AuthContextProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/rooms/new" element={<NewRom />} />
-      </Routes>
-    </AuthContextProvider>
+    <ChakraProvider>
+      <MasterMenuRoutes />
+    </ChakraProvider>
   );
-}
-
-export default App;
+};
