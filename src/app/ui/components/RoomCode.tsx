@@ -4,12 +4,10 @@ import copyImage from "../../../../public/copy.svg";
 
 interface IRoomCodeProps {
   code: string | undefined;
+  copyRooCodeToClipboard: () => void
 }
 
-export const RoomCode: React.FC<IRoomCodeProps> = ({ code }) => {
-  const copyRooCodeToClipboard = () => {
-    if (code) navigator.clipboard.writeText(code);
-  };
+export const RoomCode: React.FC<IRoomCodeProps> = ({ code, copyRooCodeToClipboard }) => {
 
   return (
     <Button

@@ -1,11 +1,11 @@
 import React from "react";
 
 import { signInWithGoogle } from "../../../repository/AuthRepository";
+import { joinRoom } from "../../../repository/RoomRepository";
 import { useNavigateTo } from "../../../react-router-dom";
+import { ROOM_REF } from "../../../utils/constants";
 import { BaseLayoutPage } from "../BaseLayoutPage";
 import { useAuth } from "../../../states/useAuth";
-import { joinRoomDAO } from "../../../databases/RoomDAO";
-import { ROOM_REF } from "../../../utils/constants";
 
 export const Home: React.FC = () => {
   const { navigateTo } = useNavigateTo();
@@ -24,14 +24,16 @@ export const Home: React.FC = () => {
           avatar: photoURL,
           name: displayName,
         });
+        navigateTo("/rooms/new");
       });
+    } else {
+      navigateTo("/rooms/new");
     }
-    navigateTo("/rooms/new");
   };
 
   const handleJoinRoom = (roomCode: string) => {
     return new Promise((resolve, reject) => {
-      joinRoomDAO(ROOM_REF, roomCode)
+      joinRoom(ROOM_REF, roomCode)
         .then((response) => {
           if (typeof response === "string") {
             resolve(response);

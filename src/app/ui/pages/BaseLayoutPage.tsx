@@ -88,12 +88,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
             position: "top-right",
           });
         } else {
-          console.log(response)
-          toastMessage({
-            title: "Sala existe",
-            statusToast: ToastStatus.SUCCESS,
-            position: "top-right",
-          });
+          navigateTo(`/rooms/${newRoom}`);
         }
       })
       .catch((error) => {
@@ -189,7 +184,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               isLoading={isLoading}
               title={TITLE_BUTTOM}
               mt={4}
-              onClick={ isHome ? onJoinRoom : onCreateRoom}
+              onClick={isHome ? onJoinRoom : onCreateRoom}
             />
           </FormControl>
           {!isHome && (
