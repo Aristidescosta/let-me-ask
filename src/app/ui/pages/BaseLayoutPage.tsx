@@ -1,4 +1,5 @@
 import { FaGoogle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import {
   Box,
   Button,
@@ -6,7 +7,6 @@ import {
   FormLabel,
   Image,
   Input,
-  Link,
   Text,
 } from "@chakra-ui/react";
 import React from "react";
@@ -14,7 +14,10 @@ import React from "react";
 import illustration from "../../../../public/illustration.svg";
 import logo from "../../../../public/logo.svg";
 
+import { useNavigateTo } from "../../react-router-dom";
 import { LetButton } from "../components/LetButton";
+import { createRoom } from "../../repository/RoomRepository";
+import { useAuth } from "../../states/useAuth";
 
 interface IBaseLayoutPageProps {
   isHome?: boolean;
@@ -22,6 +25,28 @@ interface IBaseLayoutPageProps {
 
 export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({ isHome }) => {
   const TITLE_ROOM = isHome ? "Código da sala" : "Nome da sala";
+  const TITLE_BUTTOM = isHome ? "Entrar na sala" : "Criar sala";
+
+  const { navigateTo } = useNavigateTo();
+  const { user, setUser } = useAuth();
+
+  const handleCreateRoom = () => {
+    if (!user) {
+      createRoom().then((result) => {
+        const { displayName, photoURL, uid } = result;
+
+        if (!displayName || !uid) {
+          throw new Error("Falta informação da conta Google");
+        }
+        setUser({
+          id: uid,
+          avatar: photoURL,
+          name: displayName,
+        });
+      });
+    }
+    navigateTo("/rooms/new");
+  };
 
   return (
     <Box display={"flex"} h={"100vh"} alignItems={"stretch"}>
@@ -72,15 +97,21 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({ isHome }) => {
         >
           <Image src={logo} alt="Letmeask" alignSelf={"center"} />
           {!isHome ? (
-            <Text as={"h2"} fontSize={24} margin={"64px 0 24px"}>
-              Crie uma nova sala
-            </Text>
+            <>
+              <Text as={"h1"} fontWeight={"bold"} fontSize={24}>
+                {user?.name}
+              </Text>
+              <Text as={"h2"} fontWeight={"bold"} fontSize={24}>
+                Crie uma nova sala
+              </Text>
+            </>
           ) : (
             <>
               <Button
                 aria-label="Botão para entrar com a google"
                 leftIcon={<FaGoogle />}
                 colorScheme="red"
+                onClick={handleCreateRoom}
               >
                 Crie sua sala com o Google
               </Button>
@@ -91,12 +122,14 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({ isHome }) => {
           <FormControl>
             <FormLabel>{TITLE_ROOM}</FormLabel>
             <Input placeholder={TITLE_ROOM} />
-            <LetButton title="Entrar na sala" mt={4} />
+            <LetButton title={TITLE_BUTTOM} mt={4} />
           </FormControl>
           {!isHome && (
             <Text>
               Quer entrar em uma sala existente?{" "}
-              <Link color={"#e559f9"}>Clique aqui</Link>
+              <Link to={"/"} color={"#e559f9"}>
+                Clique aqui
+              </Link>
             </Text>
           )}
         </Box>

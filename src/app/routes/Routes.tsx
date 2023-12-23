@@ -10,7 +10,7 @@ export const MasterMenuRoutes = () => {
       errorElement: <h1>Página erro</h1>,
     },
     {
-      path: "/new-room",
+      path: "/rooms/new",
       element: <NewRoom />,
       errorElement: <h1>Página erro</h1>,
     },
