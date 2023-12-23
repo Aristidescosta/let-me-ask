@@ -9,43 +9,61 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { FormEvent, useState } from "react";
 
 import illustration from "../../../../public/illustration.svg";
 import logo from "../../../../public/logo.svg";
 
-import { useNavigateTo } from "../../react-router-dom";
 import { LetButton } from "../components/LetButton";
-import { createRoom } from "../../repository/RoomRepository";
 import { useAuth } from "../../states/useAuth";
+import { createRoom } from "../../repository/RoomRepository";
+import { useToastMessage } from "../../chakra-ui-api/toast";
 
 interface IBaseLayoutPageProps {
   isHome?: boolean;
+  handleSignInWithGoogle?: () => void;
 }
 
-export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({ isHome }) => {
+export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
+  isHome,
+  handleSignInWithGoogle,
+}) => {
   const TITLE_ROOM = isHome ? "Código da sala" : "Nome da sala";
   const TITLE_BUTTOM = isHome ? "Entrar na sala" : "Criar sala";
 
-  const { navigateTo } = useNavigateTo();
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
 
-  const handleCreateRoom = () => {
-    if (!user) {
-      createRoom().then((result) => {
-        const { displayName, photoURL, uid } = result;
+  const { toastMessage, ToastStatus } = useToastMessage();
 
-        if (!displayName || !uid) {
-          throw new Error("Falta informação da conta Google");
-        }
-        setUser({
-          id: uid,
-          avatar: photoURL,
-          name: displayName,
-        });
-      });
+  const [newRoom, setNewRoom] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCreateRoom = (event: FormEvent) => {
+    event.preventDefault();
+    if (user) {
+      setIsLoading(true);
+      createRoom("rooms", {
+        title: newRoom,
+        authorId: user.id,
+        questions: [],
+      })
+        .then((response) => {
+          toastMessage({
+            title: response,
+            statusToast: response.includes("criada") ? ToastStatus.SUCCESS : ToastStatus.INFO,
+            position: "top-right",
+          });
+        })
+        .catch((error) => {
+          console.log(error)
+          toastMessage({
+            title: "Tivemos um erro interno, tente novamente",
+            statusToast: ToastStatus.SUCCESS,
+            position: "top-right",
+          });
+        })
+        .finally(() => setIsLoading(false))
     }
-    navigateTo("/rooms/new");
   };
 
   return (
@@ -111,7 +129,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({ isHome }) => {
                 aria-label="Botão para entrar com a google"
                 leftIcon={<FaGoogle />}
                 colorScheme="red"
-                onClick={handleCreateRoom}
+                onClick={handleSignInWithGoogle}
               >
                 Crie sua sala com o Google
               </Button>
@@ -121,8 +139,12 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({ isHome }) => {
           )}
           <FormControl>
             <FormLabel>{TITLE_ROOM}</FormLabel>
-            <Input placeholder={TITLE_ROOM} />
-            <LetButton title={TITLE_BUTTOM} mt={4} />
+            <Input
+              placeholder={TITLE_ROOM}
+              onChange={(e) => setNewRoom(e.target.value)}
+              value={newRoom}
+            />
+            <LetButton isLoading={isLoading} title={TITLE_BUTTOM} mt={4} onClick={handleCreateRoom} />
           </FormControl>
           {!isHome && (
             <Text>

@@ -1,15 +1,23 @@
-import { User } from "firebase/auth"
+import { createRoomDAO } from "../databases/RoomDAO";
+import { IRoomType } from "../types/RoomType";
 
-import { createRoomDAO } from "../databases/RoomDAO"
-
-export const createRoom = (): Promise<User> => {
+export const createRoom = (roomReference: string, room: IRoomType): Promise<string> => {
   return new Promise((resolve, reject) => {
     try {
-      createRoomDAO()
-        .then(response => resolve(response.user))
-        .catch(error => reject({ message: error }))
+      if (room.title.trim() === "") {
+        resolve("Adicione um título a sala")
+      } else {
+        createRoomDAO(roomReference, room)
+          .then(result => {
+            if (typeof result === "string") {
+              resolve(result)
+            }
+            resolve("Sala criada")
+          })
+          .catch(error => reject(error))
+      }
     } catch (error) {
-      reject({ message: error })
+      reject
     }
   })
 }

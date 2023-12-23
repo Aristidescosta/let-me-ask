@@ -1,14 +1,24 @@
-import { UserCredential } from "firebase/auth"
-import { sigInWithGoogle } from "../firebase/auth"
+import { DatabaseReference, push } from "firebase/database"
+import { getDatabaseRef, } from "../firebase/database"
+import { IRoomType } from "../types/RoomType";
 
-export const createRoomDAO = (): Promise<UserCredential> => {
+export const createRoomDAO = (roomReference: string, room: IRoomType): Promise<DatabaseReference | string> => {
   return new Promise((resolve, reject) => {
     try {
-      sigInWithGoogle()
-        .then(response => resolve(response))
-        .catch(error => reject({ message: error }))
+      const ROOM_REF = getDatabaseRef(roomReference);
+      console.log("Cheguei aqui")
+
+      push(ROOM_REF, room)
+        .then((response => {
+          console.log("teste")
+          resolve(response)
+        }))
+        .catch((reason) => {
+          console.log("erro")
+          resolve(reason.message)
+        })
     } catch (error) {
-      reject({ message: error })
+      reject(error);
     }
-  })
-}
+  });
+};
