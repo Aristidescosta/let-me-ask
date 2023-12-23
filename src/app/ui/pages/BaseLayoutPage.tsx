@@ -16,17 +16,22 @@ import logo from "../../../../public/logo.svg";
 
 import { LetButton } from "../components/LetButton";
 import { useAuth } from "../../states/useAuth";
-import { createRoom } from "../../repository/RoomRepository";
 import { useToastMessage } from "../../chakra-ui-api/toast";
+import { IRoomType } from "../../types/RoomType";
+import { useNavigateTo } from "../../react-router-dom";
 
 interface IBaseLayoutPageProps {
   isHome?: boolean;
   handleSignInWithGoogle?: () => void;
+  handleCreateRoom?: (room: IRoomType) => Promise<string>;
+  handleJoinRoom?: (roomCode: string) => Promise<unknown>;
 }
 
 export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
-  isHome,
   handleSignInWithGoogle,
+  handleCreateRoom,
+  handleJoinRoom,
+  isHome,
 }) => {
   const TITLE_ROOM = isHome ? "Código da sala" : "Nome da sala";
   const TITLE_BUTTOM = isHome ? "Entrar na sala" : "Criar sala";
@@ -36,34 +41,70 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
   const { toastMessage, ToastStatus } = useToastMessage();
 
   const [newRoom, setNewRoom] = useState("");
+  /* const [roomCode, setRoomCode] = useState("") */
   const [isLoading, setIsLoading] = useState(false);
+  const { navigateTo } = useNavigateTo();
 
-  const handleCreateRoom = (event: FormEvent) => {
+  const onCreateRoom = (event: FormEvent) => {
     event.preventDefault();
     if (user) {
       setIsLoading(true);
-      createRoom("rooms", {
+      handleCreateRoom?.({
         title: newRoom,
         authorId: user.id,
         questions: [],
       })
         .then((response) => {
-          toastMessage({
-            title: response,
-            statusToast: response.includes("criada") ? ToastStatus.SUCCESS : ToastStatus.INFO,
-            position: "top-right",
-          });
+          if (response.includes("sala")) {
+            toastMessage({
+              title: response,
+              statusToast: ToastStatus.INFO,
+              position: "top-right",
+            });
+          } else {
+            navigateTo(`/rooms/${response}`);
+          }
         })
         .catch((error) => {
-          console.log(error)
+          console.log(error);
           toastMessage({
             title: "Tivemos um erro interno, tente novamente",
             statusToast: ToastStatus.SUCCESS,
             position: "top-right",
           });
         })
-        .finally(() => setIsLoading(false))
+        .finally(() => setIsLoading(false));
     }
+  };
+
+  const onJoinRoom = () => {
+    setIsLoading(true);
+    handleJoinRoom?.(newRoom)
+      .then((response) => {
+        if (typeof response === "string") {
+          toastMessage({
+            title: response,
+            statusToast: ToastStatus.INFO,
+            position: "top-right",
+          });
+        } else {
+          console.log(response)
+          toastMessage({
+            title: "Sala existe",
+            statusToast: ToastStatus.SUCCESS,
+            position: "top-right",
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toastMessage({
+          title: "Tivemos um erro interno, tente novamente",
+          statusToast: ToastStatus.SUCCESS,
+          position: "top-right",
+        });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
@@ -144,7 +185,12 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               onChange={(e) => setNewRoom(e.target.value)}
               value={newRoom}
             />
-            <LetButton isLoading={isLoading} title={TITLE_BUTTOM} mt={4} onClick={handleCreateRoom} />
+            <LetButton
+              isLoading={isLoading}
+              title={TITLE_BUTTOM}
+              mt={4}
+              onClick={ isHome ? onJoinRoom : onCreateRoom}
+            />
           </FormControl>
           {!isHome && (
             <Text>

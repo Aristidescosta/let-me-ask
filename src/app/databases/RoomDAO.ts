@@ -1,8 +1,8 @@
-import { DatabaseReference, push } from "firebase/database"
+import { DataSnapshot, child, get, push } from "firebase/database"
 import { getDatabaseRef, } from "../firebase/database"
 import { IRoomType } from "../types/RoomType";
 
-export const createRoomDAO = (roomReference: string, room: IRoomType): Promise<DatabaseReference | string> => {
+export const createRoomDAO = (roomReference: string, room: IRoomType): Promise<string | null> => {
   return new Promise((resolve, reject) => {
     try {
       const ROOM_REF = getDatabaseRef(roomReference);
@@ -10,8 +10,7 @@ export const createRoomDAO = (roomReference: string, room: IRoomType): Promise<D
 
       push(ROOM_REF, room)
         .then((response => {
-          console.log("teste")
-          resolve(response)
+          resolve(response.key)
         }))
         .catch((reason) => {
           console.log("erro")
@@ -22,3 +21,23 @@ export const createRoomDAO = (roomReference: string, room: IRoomType): Promise<D
     }
   });
 };
+
+
+export const joinRoomDAO = (roomReference: string, roomCode: string): Promise<DataSnapshot | string> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const ROOM_REF = getDatabaseRef()
+      get(child(ROOM_REF, `/${roomReference}/${roomCode}`))
+        .then((snapshots) => {
+          if (snapshots.exists()) {
+            console.log(snapshots)
+            resolve(snapshots)
+          } else {
+            reject({ message: "Sem dados" })
+          }
+        })
+    } catch (error) {
+      reject
+    }
+  })
+}

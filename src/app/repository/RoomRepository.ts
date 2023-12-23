@@ -9,10 +9,11 @@ export const createRoom = (roomReference: string, room: IRoomType): Promise<stri
       } else {
         createRoomDAO(roomReference, room)
           .then(result => {
-            if (typeof result === "string") {
+            if (result) {
               resolve(result)
+            } else {
+              reject({message: "Erro ao criar a sala"})
             }
-            resolve("Sala criada")
           })
           .catch(error => reject(error))
       }
