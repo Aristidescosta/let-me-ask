@@ -33,7 +33,7 @@ export const joinRoomDAO = (path: string): Promise<DataSnapshot | string> => {
           if (snapshots.exists()) {
             resolve(snapshots)
           } else {
-            reject({ message: "Sem dados" })
+            resolve("Sem dados")
           }
         })
     } catch (error) {

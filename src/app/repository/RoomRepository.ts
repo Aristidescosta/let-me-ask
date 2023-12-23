@@ -54,3 +54,14 @@ export const createQuestion = (roomReference: string, question: IQuestionType): 
     }
   })
 }
+
+export const getAllQuestions = (roomReference: string, roomCode: string): Promise<DataSnapshot | string> => {
+  return new Promise((resolve, reject) => {
+    const PATH = `/${roomReference}/${roomCode}`
+    joinRoomDAO(PATH)
+      .then((response) => {
+        resolve(response)
+      })
+      .catch((error) => reject(error.message))
+  })
+}

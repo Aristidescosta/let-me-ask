@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -7,18 +8,27 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
 
-import logoImg from "../../../../../public/logo.svg";
-import { LetButton } from "../../components/LetButton";
-import { RoomCode } from "../../components/RoomCode";
-import { useParams } from "react-router-dom";
 import { useToastMessage } from "../../../chakra-ui-api/toast";
-import { useAuth } from "../../../states/useAuth";
 import { IQuestionType } from "../../../types/QuestionType";
-import { createQuestion } from "../../../repository/RoomRepository";
+import { LetButton } from "../../components/LetButton";
+import logoImg from "../../../../../public/logo.svg";
+import { RoomCode } from "../../components/RoomCode";
+import { ROOM_REF } from "../../../utils/constants";
+import { useAuth } from "../../../states/useAuth";
+import { useParams } from "react-router-dom";
+import {
+  createQuestion,
+  getAllQuestions,
+} from "../../../repository/RoomRepository";
 
 type IRoomParams = {
+  id: string;
+};
+
+type IFirebaseQuestions = Record<string, IQuestionType>;
+
+type TQuestionProps = IQuestionType & {
   id: string;
 };
 
@@ -29,8 +39,11 @@ export const Room: React.FC = () => {
   const { toastMessage, ToastStatus } = useToastMessage();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [titleRoom, setTitleRoom] = useState("");
 
-  const copyRooCodeToClipboard = () => {
+  const [questions, setQuestions] = useState<TQuestionProps[]>([]);
+
+  const copyRooCodeToClipboard = useCallback(() => {
     if (roomId) {
       navigator.clipboard.writeText(roomId);
       toastMessage({
@@ -39,9 +52,9 @@ export const Room: React.FC = () => {
         position: "top-right",
       });
     }
-  };
+  }, [roomId]);
 
-  const handleSendQuestion = () => {
+  const handleSendQuestion = useCallback(() => {
     if (newQuestion.trim() === "") {
       toastMessage({
         title: "Adicione a pergunta",
@@ -91,7 +104,38 @@ export const Room: React.FC = () => {
         setIsLoading(false);
       }
     }
-  };
+  }, [newQuestion, user, roomId]);
+
+  useEffect(() => {
+    if (roomId) {
+      getAllQuestions(ROOM_REF, roomId).then((response) => {
+        if (typeof response === "string") console.log(response);
+        else {
+          const databaseRoom = response.val();
+
+          const firebaseQuestions: IFirebaseQuestions =
+            databaseRoom.questions ?? {};
+
+          const parseQuestions = Object.entries(firebaseQuestions).map(
+            ([key, question]) => {
+              return {
+                id: key,
+                author: question.author,
+                content: question.content,
+                isAnswered: question.isAnswered,
+                isHighLigted: question.isHighLigted,
+              };
+            }
+          );
+
+          setQuestions(parseQuestions);
+          setTitleRoom(databaseRoom.title);
+        }
+      });
+    }
+  }, [roomId]);
+
+  console.log(questions);
 
   return (
     <Box>
@@ -114,20 +158,22 @@ export const Room: React.FC = () => {
       <Box as="main" maxW={800} margin={"0 auto"}>
         <Box margin={"32px 0 24px"} display={"flex"} alignItems={"center"}>
           <Text fontSize={24} color={"#29292e"} as="h1" fontWeight={"bold"}>
-            Sala React
+            Sala {titleRoom}
           </Text>
-          <Text
-            as="span"
-            ml={16}
-            bgColor={"#e559f9"}
-            borderRadius={9999}
-            p={"8px 16px"}
-            color={"#FFF"}
-            fontWeight={500}
-            fontSize={14}
-          >
-            4 perguntaws
-          </Text>
+          {questions.length > 0 && (
+            <Text
+              as="span"
+              ml={16}
+              bgColor={"#e559f9"}
+              borderRadius={9999}
+              p={"8px 16px"}
+              color={"#FFF"}
+              fontWeight={500}
+              fontSize={14}
+            >
+              4 perguntaws
+            </Text>
+          )}
         </Box>
 
         <FormControl>
@@ -191,6 +237,10 @@ export const Room: React.FC = () => {
             />
           </Box>
         </FormControl>
+
+        {questions.map((question) => (
+          <Text key={question.id}>{question.content}</Text>
+        ))}
       </Box>
     </Box>
   );
