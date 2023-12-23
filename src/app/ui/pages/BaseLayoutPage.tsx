@@ -98,10 +98,10 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({ isHome }) => {
           <Image src={logo} alt="Letmeask" alignSelf={"center"} />
           {!isHome ? (
             <>
-              <Text as={"h1"} fontWeight={"bold"} fontSize={24}>
+              <Text as={"h1"} fontSize={24}>
                 {user?.name}
               </Text>
-              <Text as={"h2"} fontWeight={"bold"} fontSize={24}>
+              <Text as={"h2"} fontSize={24}>
                 Crie uma nova sala
               </Text>
             </>
