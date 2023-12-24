@@ -14,35 +14,30 @@ import { IQuestionType } from "../../../types/QuestionType";
 import { LetButton } from "../../components/LetButton";
 import logoImg from "../../../../../public/logo.svg";
 import { RoomCode } from "../../components/RoomCode";
-import { ROOM_REF } from "../../../utils/constants";
 import { useAuth } from "../../../states/useAuth";
 import { Link, useParams } from "react-router-dom";
 import {
-  createQuestion,
-  getAllQuestions,
+  createQuestion
 } from "../../../repository/RoomRepository";
 import { Question } from "../../components/Question";
+import { useRoom } from "../../../states/useRoom";
 
 type IRoomParams = {
   id: string;
 };
 
-type IFirebaseQuestions = Record<string, IQuestionType>;
 
-type TQuestionProps = IQuestionType & {
-  id: string;
-};
 
 export const Room: React.FC = () => {
   const { id: roomId } = useParams<IRoomParams>();
 
-  const [newQuestion, setNewQuestion] = useState("");
+  
   const { toastMessage, ToastStatus } = useToastMessage();
   const { user } = useAuth();
+  const { questions, titleRoom } = useRoom(roomId)
+ 
+  const [newQuestion, setNewQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [titleRoom, setTitleRoom] = useState("");
-
-  const [questions, setQuestions] = useState<TQuestionProps[]>([]);
 
   const copyRooCodeToClipboard = useCallback(() => {
     if (roomId) {
@@ -107,34 +102,7 @@ export const Room: React.FC = () => {
     }
   }, [newQuestion, user, roomId]);
 
-  useEffect(() => {
-    if (roomId) {
-      getAllQuestions(ROOM_REF, roomId).then((response) => {
-        if (typeof response === "string") console.log(response);
-        else {
-          const databaseRoom = response.val();
-
-          const firebaseQuestions: IFirebaseQuestions =
-            databaseRoom.questions ?? {};
-
-          const parseQuestions = Object.entries(firebaseQuestions).map(
-            ([key, question]) => {
-              return {
-                id: key,
-                author: question.author,
-                content: question.content,
-                isAnswered: question.isAnswered,
-                isHighLigted: question.isHighLigted,
-              };
-            }
-          );
-
-          setQuestions(parseQuestions);
-          setTitleRoom(databaseRoom.title);
-        }
-      });
-    }
-  }, [roomId, questions]);
+  
 
   return (
     <Box>
