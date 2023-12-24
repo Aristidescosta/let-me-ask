@@ -21,8 +21,13 @@ import { createQuestion } from "../../../repository/RoomRepository";
 import { Question } from "../../components/Question";
 import { useRoom } from "../../../states/useRoom";
 
-import { BiLike, BiComment, BiTrash } from "react-icons/bi";
+import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
 import { ModalDelete } from "./ModalDelete";
+import {
+  likeQuestion,
+  removeLikeQuestion,
+} from "../../../repository/QuestionRepository";
+import { ROOM_REF } from "../../../utils/constants";
 
 type IRoomParams = {
   id: string;
@@ -36,24 +41,25 @@ interface IRoomProps {
     questionId: string,
     likeId: string
   ) => void;
-  isUpdating?: boolean;
   isDeleting?: boolean;
   handleDeleteQuestion?: (
     roomId: string,
     questionId: string
   ) => Promise<string>;
-  isEndedRoom?: boolean
-  handleEndRoom?: (roomId: string) => Promise<void>
+  isEndedRoom?: boolean;
+  handleEndRoom?: (roomId: string) => Promise<void>;
+  handleHighLightAnswered?: (roomId: string, questionId: string) => void;
+  handleCheckQuestionAsAnswered?: (roomId: string, questionId: string) => void;
 }
 
 export const Room: React.FC<IRoomProps> = ({
   isEndedRoom,
   isDeleting,
   isAdmin,
-  handleRemoveLikeQuestion,
   handleDeleteQuestion,
-  handleLikeQuestion,
-  handleEndRoom
+  handleHighLightAnswered,
+  handleCheckQuestionAsAnswered,
+  handleEndRoom,
 }) => {
   const { id: roomId } = useParams<IRoomParams>();
 
@@ -63,6 +69,7 @@ export const Room: React.FC<IRoomProps> = ({
 
   const [newQuestion, setNewQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  /* const [isUpdating, setIsUpdating] = useState(false); */
 
   const [question, setQuestion] = useState({
     content: "",
@@ -80,6 +87,38 @@ export const Room: React.FC<IRoomProps> = ({
       });
     }
   }, [roomId]);
+
+  const handleLikeQuestion = (roomId: string, questionId: string) => {
+    const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}/likes`;
+    if (user) {
+      likeQuestion(PATH, user.id);
+    }
+  };
+
+  const onHandleHighLightAnswered = (questionId: string) => {
+    handleHighLightAnswered?.(roomId, questionId);
+  };
+  const onHandleCheckQuestionAsAnswered = (questionId: string) => {
+    handleCheckQuestionAsAnswered?.(roomId, questionId);
+  };
+
+  const handleRemoveLikeQuestion = (
+    roomId: string,
+    questionId: string,
+    likeId: string
+  ) => {
+    const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}/likes/${likeId}`;
+    /* setIsUpdating(true); */
+    removeLikeQuestion(PATH).catch((error) => {
+      console.error(error);
+      toastMessage({
+        title: "Tivemos um erro interno, tente novamente!",
+        position: "top-right",
+        statusToast: ToastStatus.ERROR,
+      });
+    });
+    /* .finally(() => setIsUpdating(false)); */
+  };
 
   const onDeleteQuestion = (questionId: string) => {
     if (handleDeleteQuestion && roomId) {
@@ -123,9 +162,9 @@ export const Room: React.FC<IRoomProps> = ({
     questionId: string,
     likeId: string | undefined
   ) => {
-    if (handleLikeQuestion && roomId) {
+    if (roomId) {
       if (likeId) {
-        handleRemoveLikeQuestion?.(roomId, questionId, likeId);
+        handleRemoveLikeQuestion(roomId, questionId, likeId);
       } else {
         handleLikeQuestion(roomId, questionId);
       }
@@ -203,7 +242,12 @@ export const Room: React.FC<IRoomProps> = ({
               copyRooCodeToClipboard={copyRooCodeToClipboard}
             />
             {isAdmin && (
-              <LetButton onClick={() => handleEndRoom?.(roomId ?? "")} isLoading={isEndedRoom} title="Encerrar a sala" isOutlined={isAdmin} />
+              <LetButton
+                onClick={() => handleEndRoom?.(roomId ?? "")}
+                isLoading={isEndedRoom}
+                title="Encerrar a sala"
+                isOutlined={isAdmin}
+              />
             )}
           </Box>
         </Box>
@@ -293,53 +337,70 @@ export const Room: React.FC<IRoomProps> = ({
         </FormControl>
 
         <Box mt={"32px"} display={"flex"} flexDir={"column"}>
-          {questions.map((question) =>
-            isAdmin ? (
-              <Question
-                key={question.id}
-                author={question.author}
-                content={question.content}
+          {questions.map((question) => (
+            <Question
+              key={question.id}
+              author={question.author}
+              content={question.content}
+              isAnswered={question.isAnswered}
+              isHighLigted={question.isHighLigted}
+            >
+              <Box
+                display={"flex"}
+                gap={2}
+                alignItems={"center"}
+                justifyContent={"flex-end"}
               >
-                <Box
-                  display={"flex"}
-                  gap={2}
-                  alignItems={"center"}
-                  justifyContent={"flex-end"}
-                >
-                  <Button
-                    rightIcon={<BiLike />}
-                    aria-label="Dar like na pergunta"
-                    onClick={() =>
-                      onHandleLikeQuestion(question.id, question.likeId)
-                    }
-                  >
-                    {question.likeCount > 0 && question.likeCount}
-                  </Button>
+                {isAdmin ? (
+                  <>
+                    {!question.isAnswered && (
+                      <>
+                        <IconButton
+                          isRound={true}
+                          variant="solid"
+                          /* colorScheme="teal" */
+                          aria-label="Marcar pergunta como respondida"
+                          fontSize="20px"
+                          icon={<BiCheckCircle />}
+                          onClick={() =>
+                            onHandleCheckQuestionAsAnswered(question.id)
+                          }
+                        />
 
-                  <IconButton
-                    icon={<BiComment />}
-                    aria-label="Responder a uma pergunta"
-                    variant="outline"
-                  />
+                        <IconButton
+                          icon={<BiComment />}
+                          aria-label="Dar destaque a pergunta"
+                          variant="outline"
+                          onClick={() => onHandleHighLightAnswered(question.id)}
+                        />
+                      </>
+                    )}
 
-                  <IconButton
-                    icon={<BiTrash />}
-                    aria-label="Eliminar pergunta"
-                    variant="outline"
-                    onClick={() =>
-                      onOpenModalDelete(question.content, question.id)
-                    }
-                  />
-                </Box>
-              </Question>
-            ) : (
-              <Question
-                key={question.id}
-                author={question.author}
-                content={question.content}
-              />
-            )
-          )}
+                    <IconButton
+                      icon={<BiTrash />}
+                      aria-label="Eliminar pergunta"
+                      variant="outline"
+                      onClick={() =>
+                        onOpenModalDelete(question.content, question.id)
+                      }
+                    />
+                  </>
+                ) : (
+                  !question.isAnswered && (
+                    <Button
+                      rightIcon={<BiLike />}
+                      aria-label="Dar like na pergunta"
+                      onClick={() =>
+                        onHandleLikeQuestion(question.id, question.likeId)
+                      }
+                    >
+                      {question.likeCount > 0 && question.likeCount}
+                    </Button>
+                  )
+                )}
+              </Box>
+            </Question>
+          ))}
         </Box>
       </Box>
 

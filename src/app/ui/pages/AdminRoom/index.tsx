@@ -1,48 +1,46 @@
 import React, { useState } from "react";
 import { Room } from "../Room";
 import {
+  checkQuestionAsAnswered,
+  highLightAnswered,
   likeQuestion,
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
 import { ROOM_REF } from "../../../utils/constants";
-import { useAuth } from "../../../states/useAuth";
-import { useToastMessage } from "../../../chakra-ui-api/toast";
 import { endRoom } from "../../../repository/RoomRepository";
 import { useNavigateTo } from "../../../react-router-dom";
+import { useToastMessage } from "../../../chakra-ui-api/toast";
 
 export const AdminRoom: React.FC = () => {
-  const { user } = useAuth();
-  const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEndedRoom, setIsEndedRoom] = useState(false);
   const { toastMessage, ToastStatus } = useToastMessage();
 
-  const { navigateTo } = useNavigateTo()
+  const { navigateTo } = useNavigateTo();
 
-  const handleLikeQuestion = (roomId: string, questionId: string) => {
-    const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}/likes`;
-    if (user) {
-      likeQuestion(PATH, user.id);
-    }
+  const handleCheckQuestionAsAnswered = (
+    roomId: string,
+    questionId: string
+  ) => {
+    const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}`;
+    checkQuestionAsAnswered(PATH).catch(() => {
+      toastMessage({
+        title: "Houve um pequeno erro interno, tente novamente",
+        statusToast: ToastStatus.WARNING,
+        position: "top-right",
+      });
+    });
   };
 
-  const handleRemoveLikeQuestion = (
-    roomId: string,
-    questionId: string,
-    likeId: string
-  ) => {
-    const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}/likes/${likeId}`;
-    setIsUpdating(true);
-    removeLikeQuestion(PATH)
-      .catch((error) => {
-        console.error(error);
-        toastMessage({
-          title: "Tivemos um erro interno, tente novamente!",
-          position: "top-right",
-          statusToast: ToastStatus.ERROR,
-        });
-      })
-      .finally(() => setIsUpdating(false));
+  const handleHighLightAnswered = (roomId: string, questionId: string) => {
+    const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}`;
+    highLightAnswered(PATH).catch(() => {
+      toastMessage({
+        title: "Houve um pequeno erro interno, tente novamente",
+        statusToast: ToastStatus.WARNING,
+        position: "top-right",
+      });
+    });
   };
 
   const handleDeleteQuestion = (
@@ -67,11 +65,11 @@ export const AdminRoom: React.FC = () => {
   const handleEndRoom = (roomId: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const PATH = `${ROOM_REF}/${roomId}`;
-      setIsEndedRoom(true)
+      setIsEndedRoom(true);
       endRoom(PATH)
         .then(() => {
-          navigateTo("/")
-          resolve
+          navigateTo("/");
+          resolve;
         })
         .catch((reason) => {
           console.log("erro");
@@ -84,13 +82,12 @@ export const AdminRoom: React.FC = () => {
   return (
     <Room
       isAdmin
-      isUpdating={isUpdating}
-      handleRemoveLikeQuestion={handleRemoveLikeQuestion}
-      handleLikeQuestion={handleLikeQuestion}
       handleDeleteQuestion={handleDeleteQuestion}
       isDeleting={isDeleting}
       handleEndRoom={handleEndRoom}
       isEndedRoom={isEndedRoom}
+      handleHighLightAnswered={handleHighLightAnswered}
+      handleCheckQuestionAsAnswered={handleCheckQuestionAsAnswered}
     />
   );
 };

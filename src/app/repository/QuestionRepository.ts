@@ -1,4 +1,4 @@
-import { likeQuestionDAO, removeLikeQuestionDAO, removeQuestion } from "../databases/QuestionDAO"
+import { checkQuestionAsAnsweredDAO, highLightAnsweredDAO, likeQuestionDAO, removeLikeQuestionDAO, removeQuestion } from "../databases/QuestionDAO"
 
 export const likeQuestion = (questionReference: string, authorId: string) => {
   return new Promise((resolve, reject) => {
@@ -39,6 +39,38 @@ export const deleteQuestion = (likeReference: string): Promise<void> => {
     } catch (error) {
       console.error("Erro: " + error)
       reject({ message: error as string });
+    }
+  })
+}
+
+export const checkQuestionAsAnswered = (questionReference: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      checkQuestionAsAnsweredDAO(questionReference)
+        .then(resolve)
+        .catch((reason) => {
+          console.log("erro")
+          reject(reason)
+        })
+    } catch (error) {
+      console.error("Erro: " + error)
+      reject({ message: "Tivemos um erro interno, tente novamente" })
+    }
+  })
+}
+
+export const highLightAnswered = (questionReference: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      highLightAnsweredDAO(questionReference)
+        .then(resolve)
+        .catch((reason) => {
+          console.log("erro")
+          reject(reason)
+        })
+    } catch (error) {
+      console.error("Erro: " + error)
+      reject({ message: "Tivemos um erro interno, tente novamente" })
     }
   })
 }

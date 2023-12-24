@@ -8,18 +8,29 @@ interface IQuestionProps {
     avatar: string | null;
   };
   children?: React.ReactNode;
+  isAnswered?: boolean;
+  isHighLigted?: boolean;
 }
 
 export const Question: React.FC<IQuestionProps> = ({
   content,
   author,
   children,
+  isAnswered = false,
+  isHighLigted = false,
 }) => {
   return (
     <Box
-      bgColor={"#fefefe"}
+      bgColor={
+        isHighLigted && !isAnswered
+          ? "#F4F0FF"
+          : isAnswered
+          ? "#DBDCDD"
+          : "#fefefe"
+      }
+      border={isHighLigted && !isAnswered ? "1px solid #835AFD" : "none"}
       borderRadius={8}
-      boxShadow={"-7px 8px 32px 11px rgba(0,0,0,0.1)"}
+      boxShadow={!isAnswered ? "-7px 8px 32px 11px rgba(0,0,0,0.1)" : ""}
       p={"24px"}
       sx={{
         "& + div": {

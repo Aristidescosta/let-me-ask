@@ -1,4 +1,4 @@
-import { push, remove } from "firebase/database"
+import { push, remove, update } from "firebase/database"
 import { getDatabaseRef } from "../firebase/database"
 
 export const likeQuestionDAO = (questionReference: string, authorId: string): Promise<string | null> => {
@@ -53,6 +53,42 @@ export const removeQuestion = (likeReference: string): Promise<void> => {
     } catch (error) {
       console.error("Erro: " + error)
       reject({ message: error as string });
+    }
+  })
+}
+
+export const checkQuestionAsAnsweredDAO = (questionReference: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const ROOM_REF = getDatabaseRef(questionReference)
+
+      update(ROOM_REF, { isAnswered: true })
+        .then(resolve)
+        .catch((reason) => {
+          console.log("erro")
+          reject(reason)
+        })
+    } catch (error) {
+      console.error("Erro: " + error)
+      reject({ message: "Tivemos um erro interno, tente novamente" })
+    }
+  })
+}
+
+export const highLightAnsweredDAO = (questionReference: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const ROOM_REF = getDatabaseRef(questionReference)
+
+      update(ROOM_REF, { isHighLigted: true })
+        .then(resolve)
+        .catch((reason) => {
+          console.log("erro")
+          reject(reason)
+        })
+    } catch (error) {
+      console.error("Erro: " + error)
+      reject({ message: "Tivemos um erro interno, tente novamente" })
     }
   })
 }
