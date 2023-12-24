@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Avatar,
   Box,
@@ -16,9 +16,7 @@ import logoImg from "../../../../../public/logo.svg";
 import { RoomCode } from "../../components/RoomCode";
 import { useAuth } from "../../../states/useAuth";
 import { Link, useParams } from "react-router-dom";
-import {
-  createQuestion
-} from "../../../repository/RoomRepository";
+import { createQuestion } from "../../../repository/RoomRepository";
 import { Question } from "../../components/Question";
 import { useRoom } from "../../../states/useRoom";
 
@@ -26,16 +24,17 @@ type IRoomParams = {
   id: string;
 };
 
+interface IRoomProps {
+  isAdmin?: boolean;
+}
 
-
-export const Room: React.FC = () => {
+export const Room: React.FC<IRoomProps> = ({ isAdmin }) => {
   const { id: roomId } = useParams<IRoomParams>();
 
-  
   const { toastMessage, ToastStatus } = useToastMessage();
   const { user } = useAuth();
-  const { questions, titleRoom } = useRoom(roomId)
- 
+  const { questions, titleRoom } = useRoom(roomId);
+
   const [newQuestion, setNewQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -102,8 +101,6 @@ export const Room: React.FC = () => {
     }
   }, [newQuestion, user, roomId]);
 
-  
-
   return (
     <Box>
       <Box as="header" padding={24} borderBottom={"1px solid #e2e2e2"}>
@@ -115,10 +112,13 @@ export const Room: React.FC = () => {
           alignItems={"center"}
         >
           <Image src={logoImg} alt="logo do let me ask" maxH={45} />
-          <RoomCode
-            code={roomId}
-            copyRooCodeToClipboard={copyRooCodeToClipboard}
-          />
+          <Box display={"flex"} alignItems={"center"} gap={4}>
+            <RoomCode
+              code={roomId}
+              copyRooCodeToClipboard={copyRooCodeToClipboard}
+            />
+            <LetButton title="Encerrar a sala" isOutlined={isAdmin}/>
+          </Box>
         </Box>
       </Box>
 

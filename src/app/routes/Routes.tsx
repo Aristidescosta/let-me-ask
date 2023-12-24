@@ -1,4 +1,5 @@
 import { RProvider, cRRouter } from "../react-router-dom";
+import { AdminRoom } from "../ui/pages/AdminRoom";
 import { Home } from "../ui/pages/Home";
 import { Room } from "../ui/pages/Room";
 import { NewRoom } from "../ui/pages/Room/NewRoom";
@@ -18,6 +19,12 @@ export const MasterMenuRoutes = () => {
     {
       path: "/rooms/:id",
       element: <Room />,
+      errorElement: <h1>Página erro</h1>,
+    },
+
+    {
+      path: "/admin/rooms/:id",
+      element: <AdminRoom />,
       errorElement: <h1>Página erro</h1>,
     },
   ]);
