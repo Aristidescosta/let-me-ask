@@ -78,28 +78,32 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
   };
 
   const onJoinRoom = () => {
-    setIsLoading(true);
-    handleJoinRoom?.(newRoom)
-      .then((response) => {
-        if (typeof response === "string") {
+    try {
+      setIsLoading(true);
+      handleJoinRoom?.(newRoom)
+        .then((response) => {
+          if (typeof response === "string") {
+            toastMessage({
+              title: response,
+              statusToast: ToastStatus.INFO,
+              position: "top-right",
+            });
+          } else {
+            navigateTo(`/rooms/${newRoom}`);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
           toastMessage({
-            title: response,
-            statusToast: ToastStatus.INFO,
+            title: "Tivemos um erro interno, tente novamente",
+            statusToast: ToastStatus.SUCCESS,
             position: "top-right",
           });
-        } else {
-          navigateTo(`/rooms/${newRoom}`);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        toastMessage({
-          title: "Tivemos um erro interno, tente novamente",
-          statusToast: ToastStatus.SUCCESS,
-          position: "top-right",
-        });
-      })
-      .finally(() => setIsLoading(false));
+        })
+        .finally(() => setIsLoading(false));
+    } catch (error) {
+      console.log("ERRO:");
+    }
   };
 
   return (

@@ -16,11 +16,12 @@ import logoImg from "../../../../../public/logo.svg";
 import { RoomCode } from "../../components/RoomCode";
 import { ROOM_REF } from "../../../utils/constants";
 import { useAuth } from "../../../states/useAuth";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   createQuestion,
   getAllQuestions,
 } from "../../../repository/RoomRepository";
+import { Question } from "../../components/Question";
 
 type IRoomParams = {
   id: string;
@@ -133,9 +134,7 @@ export const Room: React.FC = () => {
         }
       });
     }
-  }, [roomId]);
-
-  console.log(questions);
+  }, [roomId, questions]);
 
   return (
     <Box>
@@ -171,7 +170,7 @@ export const Room: React.FC = () => {
               fontWeight={500}
               fontSize={14}
             >
-              4 perguntaws
+              {questions.length} perguntas
             </Text>
           )}
         </Box>
@@ -183,7 +182,7 @@ export const Room: React.FC = () => {
             boxShadow={"0 2px 12px rgba(0, 0, 0, 0.04)"}
             minH={130}
             resize={"vertical"}
-            placeholder="O que você quer perguntat?"
+            placeholder="O que você quer perguntar?"
             onChange={(event) => setNewQuestion(event.target.value)}
             value={newQuestion}
           />
@@ -204,7 +203,7 @@ export const Room: React.FC = () => {
                   fontSize={14}
                   fontWeight={500}
                 >
-                  faça seu login
+                  <Link to={"/"}>faça seu login</Link>
                 </Button>
               </Text>
             ) : (
@@ -238,9 +237,15 @@ export const Room: React.FC = () => {
           </Box>
         </FormControl>
 
-        {questions.map((question) => (
-          <Text key={question.id}>{question.content}</Text>
-        ))}
+        <Box mt={"32px"}>
+          {questions.map((question) => (
+            <Question
+              key={question.id}
+              author={question.author}
+              content={question.content}
+            />
+          ))}
+        </Box>
       </Box>
     </Box>
   );
