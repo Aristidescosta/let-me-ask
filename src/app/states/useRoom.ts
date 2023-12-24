@@ -44,7 +44,7 @@ export const useRoom = (roomId: string | undefined) => {
                 isAnswered: question.isAnswered,
                 isHighLigted: question.isHighLigted,
                 likeCount: Object.values(question.likes ?? {}).length,
-                likeId: Object.entries(question.likes ?? {}).find(([key, like]) => like.authorId === user?.id)?.[0],
+                likeId: Object.entries(question.likes ?? {}).find(([, like]) => like.authorId === user?.id)?.[0],
               };
             }
           );

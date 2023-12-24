@@ -1,5 +1,5 @@
 import { DataSnapshot } from "firebase/database";
-import { createQuestionDAO, createRoomDAO, joinRoomDAO } from "../databases/RoomDAO";
+import { createQuestionDAO, createRoomDAO, endRoomDAO, joinRoomDAO } from "../databases/RoomDAO";
 import { IRoomType } from "../types/RoomType";
 import { IQuestionType } from "../types/QuestionType";
 
@@ -63,5 +63,23 @@ export const getAllQuestions = (roomReference: string, roomCode: string): Promis
         resolve(response)
       })
       .catch((error) => reject(error.message))
+  })
+}
+
+export const endRoom = (roomReference: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const ENDED_AT = new Date()
+
+      endRoomDAO(roomReference, ENDED_AT)
+        .then(resolve)
+        .catch((reason) => {
+          console.log("erro")
+          reject(reason)
+        })
+    } catch (error) {
+      console.error("Erro: " + error)
+      reject({ message: "Tivemos um erro interno, tente novamente" })
+    }
   })
 }

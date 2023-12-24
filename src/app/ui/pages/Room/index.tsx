@@ -42,14 +42,18 @@ interface IRoomProps {
     roomId: string,
     questionId: string
   ) => Promise<string>;
+  isEndedRoom?: boolean
+  handleEndRoom?: (roomId: string) => Promise<void>
 }
 
 export const Room: React.FC<IRoomProps> = ({
+  isEndedRoom,
   isDeleting,
   isAdmin,
   handleRemoveLikeQuestion,
   handleDeleteQuestion,
   handleLikeQuestion,
+  handleEndRoom
 }) => {
   const { id: roomId } = useParams<IRoomParams>();
 
@@ -199,7 +203,7 @@ export const Room: React.FC<IRoomProps> = ({
               copyRooCodeToClipboard={copyRooCodeToClipboard}
             />
             {isAdmin && (
-              <LetButton title="Encerrar a sala" isOutlined={isAdmin} />
+              <LetButton onClick={() => handleEndRoom?.(roomId ?? "")} isLoading={isEndedRoom} title="Encerrar a sala" isOutlined={isAdmin} />
             )}
           </Box>
         </Box>
