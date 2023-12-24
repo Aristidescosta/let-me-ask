@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   FormControl,
+  IconButton,
   Image,
   Text,
   Textarea,
@@ -20,15 +21,28 @@ import { createQuestion } from "../../../repository/RoomRepository";
 import { Question } from "../../components/Question";
 import { useRoom } from "../../../states/useRoom";
 
+import { BiLike, BiComment, BiTrash } from "react-icons/bi";
+
 type IRoomParams = {
   id: string;
 };
 
 interface IRoomProps {
   isAdmin?: boolean;
+  handleLikeQuestion?: (roomId: string, questionId: string) => void;
+  handleRemoveLikeQuestion?: (
+    roomId: string,
+    questionId: string,
+    likeId: string
+  ) => void;
+  isUpdating?: boolean;
 }
 
-export const Room: React.FC<IRoomProps> = ({ isAdmin }) => {
+export const Room: React.FC<IRoomProps> = ({
+  isAdmin,
+  handleLikeQuestion,
+  handleRemoveLikeQuestion,
+}) => {
   const { id: roomId } = useParams<IRoomParams>();
 
   const { toastMessage, ToastStatus } = useToastMessage();
@@ -48,6 +62,19 @@ export const Room: React.FC<IRoomProps> = ({ isAdmin }) => {
       });
     }
   }, [roomId]);
+
+  const onHandleLikeQuestion = (
+    questionId: string,
+    likeId: string | undefined
+  ) => {
+    if (handleLikeQuestion && roomId) {
+      if (likeId) {
+        handleRemoveLikeQuestion?.(roomId, questionId, likeId);
+      } else {
+        handleLikeQuestion(roomId, questionId);
+      }
+    }
+  };
 
   const handleSendQuestion = useCallback(() => {
     if (newQuestion.trim() === "") {
@@ -73,6 +100,8 @@ export const Room: React.FC<IRoomProps> = ({ isAdmin }) => {
           },
           isHighLigted: false,
           isAnswered: false,
+          likeId: undefined,
+          likeCount: 0,
         };
         createQuestion(`rooms/${roomId}/questions`, question)
           .then(() => {
@@ -117,7 +146,7 @@ export const Room: React.FC<IRoomProps> = ({ isAdmin }) => {
               code={roomId}
               copyRooCodeToClipboard={copyRooCodeToClipboard}
             />
-            <LetButton title="Encerrar a sala" isOutlined={isAdmin}/>
+            <LetButton title="Encerrar a sala" isOutlined={isAdmin} />
           </Box>
         </Box>
       </Box>
@@ -205,14 +234,51 @@ export const Room: React.FC<IRoomProps> = ({ isAdmin }) => {
           </Box>
         </FormControl>
 
-        <Box mt={"32px"}>
-          {questions.map((question) => (
-            <Question
-              key={question.id}
-              author={question.author}
-              content={question.content}
-            />
-          ))}
+        <Box mt={"32px"} display={"flex"} flexDir={"column"}>
+          {questions.map((question) =>
+            isAdmin ? (
+              <Question
+                key={question.id}
+                author={question.author}
+                content={question.content}
+              >
+                <Box
+                  display={"flex"}
+                  gap={2}
+                  alignItems={"center"}
+                  justifyContent={"flex-end"}
+                >
+                  <Button
+                    rightIcon={<BiLike />}
+                    aria-label="Dar like na pergunta"
+                    onClick={() =>
+                      onHandleLikeQuestion(question.id, question.likeId)
+                    }
+                  >
+                    {question.likeCount > 0 && question.likeCount}
+                  </Button>
+
+                  <IconButton
+                    icon={<BiComment />}
+                    aria-label="Responder a uma pergunta"
+                    variant="outline"
+                  />
+
+                  <IconButton
+                    icon={<BiTrash />}
+                    aria-label="Eliminar pergunta"
+                    variant="outline"
+                  />
+                </Box>
+              </Question>
+            ) : (
+              <Question
+                key={question.id}
+                author={question.author}
+                content={question.content}
+              />
+            )
+          )}
         </Box>
       </Box>
     </Box>

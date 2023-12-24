@@ -7,9 +7,14 @@ interface IQuestionProps {
     name: string;
     avatar: string | null;
   };
+  children?: React.ReactNode;
 }
 
-export const Question: React.FC<IQuestionProps> = ({ content, author }) => {
+export const Question: React.FC<IQuestionProps> = ({
+  content,
+  author,
+  children,
+}) => {
   return (
     <Box
       bgColor={"#fefefe"}
@@ -31,10 +36,7 @@ export const Question: React.FC<IQuestionProps> = ({ content, author }) => {
         alignItems={"center"}
         mt={"24px"}
       >
-        <Box
-          display={"flex"}
-          alignItems={"center"}
-        >
+        <Box display={"flex"} alignItems={"center"}>
           <Avatar
             src={author.avatar ? author.avatar : undefined}
             name={author.name}
@@ -51,6 +53,7 @@ export const Question: React.FC<IQuestionProps> = ({ content, author }) => {
           <Box></Box>
         </Box>
       </Box>
+      {children}
     </Box>
   );
 };

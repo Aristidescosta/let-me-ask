@@ -5,4 +5,6 @@ export interface IQuestionType {
   content: string
   isAnswered: boolean
   isHighLigted: boolean
+  likeCount: number
+  likeId: string | undefined
 }
