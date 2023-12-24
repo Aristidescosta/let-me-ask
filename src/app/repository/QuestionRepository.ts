@@ -1,4 +1,4 @@
-import { likeQuestionDAO, removeLikeQuestionDAO } from "../databases/QuestionDAO"
+import { likeQuestionDAO, removeLikeQuestionDAO, removeQuestion } from "../databases/QuestionDAO"
 
 export const likeQuestion = (questionReference: string, authorId: string) => {
   return new Promise((resolve, reject) => {
@@ -27,3 +27,19 @@ export const removeLikeQuestion = (likeReference: string): Promise<void> => {
     }
   })
 }
+
+export const deleteQuestion = (likeReference: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      removeQuestion(likeReference)
+        .then(resolve)
+        .catch((reason) => {
+          reject(reason)
+        })
+    } catch (error) {
+      console.error("Erro: " + error)
+      reject({ message: error as string });
+    }
+  })
+}
+

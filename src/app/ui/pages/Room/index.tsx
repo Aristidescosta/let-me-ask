@@ -22,6 +22,7 @@ import { Question } from "../../components/Question";
 import { useRoom } from "../../../states/useRoom";
 
 import { BiLike, BiComment, BiTrash } from "react-icons/bi";
+import { ModalDelete } from "./ModalDelete";
 
 type IRoomParams = {
   id: string;
@@ -36,12 +37,19 @@ interface IRoomProps {
     likeId: string
   ) => void;
   isUpdating?: boolean;
+  isDeleting?: boolean;
+  handleDeleteQuestion?: (
+    roomId: string,
+    questionId: string
+  ) => Promise<string>;
 }
 
 export const Room: React.FC<IRoomProps> = ({
+  isDeleting,
   isAdmin,
-  handleLikeQuestion,
   handleRemoveLikeQuestion,
+  handleDeleteQuestion,
+  handleLikeQuestion,
 }) => {
   const { id: roomId } = useParams<IRoomParams>();
 
@@ -51,6 +59,12 @@ export const Room: React.FC<IRoomProps> = ({
 
   const [newQuestion, setNewQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const [question, setQuestion] = useState({
+    content: "",
+    id: "",
+  });
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const copyRooCodeToClipboard = useCallback(() => {
     if (roomId) {
@@ -62,6 +76,44 @@ export const Room: React.FC<IRoomProps> = ({
       });
     }
   }, [roomId]);
+
+  const onDeleteQuestion = (questionId: string) => {
+    if (handleDeleteQuestion && roomId) {
+      handleDeleteQuestion?.(roomId, questionId)
+        .then((response) => {
+          toastMessage({
+            title: response,
+            position: "top-right",
+            statusToast: ToastStatus.SUCCESS,
+          });
+          onCloseModalDelete();
+        })
+        .catch((error) => {
+          console.error(error);
+          toastMessage({
+            title: "Tivemos um erro interno, tente novamente!",
+            position: "top-right",
+            statusToast: ToastStatus.ERROR,
+          });
+        });
+    }
+  };
+
+  const onOpenModalDelete = (content: string, id: string) => {
+    setIsOpenModal(true);
+    setQuestion({
+      content: content,
+      id: id,
+    });
+  };
+
+  const onCloseModalDelete = () => {
+    setIsOpenModal(false);
+    setQuestion({
+      content: "",
+      id: "",
+    });
+  };
 
   const onHandleLikeQuestion = (
     questionId: string,
@@ -146,7 +198,9 @@ export const Room: React.FC<IRoomProps> = ({
               code={roomId}
               copyRooCodeToClipboard={copyRooCodeToClipboard}
             />
-            <LetButton title="Encerrar a sala" isOutlined={isAdmin} />
+            {isAdmin && (
+              <LetButton title="Encerrar a sala" isOutlined={isAdmin} />
+            )}
           </Box>
         </Box>
       </Box>
@@ -268,6 +322,9 @@ export const Room: React.FC<IRoomProps> = ({
                     icon={<BiTrash />}
                     aria-label="Eliminar pergunta"
                     variant="outline"
+                    onClick={() =>
+                      onOpenModalDelete(question.content, question.id)
+                    }
                   />
                 </Box>
               </Question>
@@ -281,6 +338,16 @@ export const Room: React.FC<IRoomProps> = ({
           )}
         </Box>
       </Box>
+
+      {isOpenModal && (
+        <ModalDelete
+          question={question}
+          isOpen={isOpenModal}
+          onClose={onCloseModalDelete}
+          handleDeleteQuestion={onDeleteQuestion}
+          isDeleting={isDeleting ?? false}
+        />
+      )}
     </Box>
   );
 };

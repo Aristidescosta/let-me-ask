@@ -39,3 +39,20 @@ export const removeLikeQuestionDAO = (likeReference: string): Promise<void> => {
     }
   })
 }
+
+export const removeQuestion = (likeReference: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const ROOM_REF = getDatabaseRef(likeReference);
+
+      remove(ROOM_REF)
+        .then(resolve)
+        .catch((reason) => {
+          reject(reason)
+        })
+    } catch (error) {
+      console.error("Erro: " + error)
+      reject({ message: error as string });
+    }
+  })
+}
