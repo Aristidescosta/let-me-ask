@@ -3,7 +3,6 @@ import { Room } from "../Room";
 import {
   checkQuestionAsAnswered,
   highLightAnswered,
-  likeQuestion,
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
 import { ROOM_REF } from "../../../utils/constants";

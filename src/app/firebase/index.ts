@@ -2,14 +2,22 @@ import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithPopup } from
 import { initializeFirestore } from 'firebase/firestore';
 import { initializeApp } from 'firebase/app'
 
+const API_KEY = import.meta.env.VITE_API_KEY
+const AUTH_DOMAIN = import.meta.env.VITE_AUTH_DOMAIN
+const DATABASE_URL = import.meta.env.VITE_DATABASE_URL
+const PROJECT_ID = import.meta.env.VITE_PROJECT_ID
+const STORAGE_BUCKET = import.meta.env.VITE_STORAGE_BUCKET
+const MESSAGING_SENDER_ID = import.meta.env.VITE_MESSAGING_SENDER_ID
+const APP_ID = import.meta.env.VITE_APP_ID
+
 const firebaseConfig = initializeApp({
-  apiKey: "AIzaSyBjYP6DLcE7OlzzhvdSeEf0ncAuhBVneOY",
-  authDomain: "letmeask-a875f.firebaseapp.com",
-  databaseURL: "https://letmeask-a875f-default-rtdb.firebaseio.com",
-  projectId: "letmeask-a875f",
-  storageBucket: "letmeask-a875f.appspot.com",
-  messagingSenderId: "552940035247",
-  appId: "1:552940035247:web:2b3aa22dec3eed02f0485a"
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  databaseURL: DATABASE_URL,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: APP_ID
 });
 
 initializeFirestore(firebaseConfig, { ignoreUndefinedProperties: true })

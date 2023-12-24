@@ -96,10 +96,14 @@ export const Room: React.FC<IRoomProps> = ({
   };
 
   const onHandleHighLightAnswered = (questionId: string) => {
-    handleHighLightAnswered?.(roomId, questionId);
+    if (roomId && handleHighLightAnswered) {
+      handleHighLightAnswered(roomId, questionId);
+    }
   };
   const onHandleCheckQuestionAsAnswered = (questionId: string) => {
-    handleCheckQuestionAsAnswered?.(roomId, questionId);
+    if (roomId && handleCheckQuestionAsAnswered) {
+      handleCheckQuestionAsAnswered(roomId, questionId);
+    }
   };
 
   const handleRemoveLikeQuestion = (
