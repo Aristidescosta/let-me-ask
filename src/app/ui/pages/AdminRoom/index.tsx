@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { Room } from "../Room";
+
+import { useToastMessage } from "../../../chakra-ui-api/toast";
+import { endRoom } from "../../../repository/RoomRepository";
+import { useNavigateTo } from "../../../react-router-dom";
+import { ROOM_REF } from "../../../utils/constants";
 import {
   checkQuestionAsAnswered,
   highLightAnswered,
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
-import { ROOM_REF } from "../../../utils/constants";
-import { endRoom } from "../../../repository/RoomRepository";
-import { useNavigateTo } from "../../../react-router-dom";
-import { useToastMessage } from "../../../chakra-ui-api/toast";
+import { Room } from "../Room";
 
 export const AdminRoom: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);

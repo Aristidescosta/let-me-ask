@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
+
 import { getAllQuestions } from "../repository/RoomRepository";
-import { ROOM_REF } from "../utils/constants";
 import { IQuestionType } from "../types/QuestionType";
+import { ROOM_REF } from "../utils/constants";
 import { IUserType } from "../types/UserType";
 import { useAuth } from "./useAuth";
 
@@ -17,6 +18,8 @@ type IFirebaseQuestions = Record<string, {
 
 type TQuestionProps = IQuestionType & {
   id: string;
+  likeCount: number;
+  likeId: string | undefined;
 };
 
 export const useRoom = (roomId: string | undefined) => {

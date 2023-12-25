@@ -1,7 +1,9 @@
 import { DataSnapshot, child, get, push, update } from "firebase/database"
+import { FirebaseError } from "firebase/app";
+
 import { getDatabaseRef, } from "../firebase/database"
-import { IRoomType } from "../types/RoomType";
 import { IQuestionType } from "../types/QuestionType";
+import { IRoomType } from "../types/RoomType";
 
 export const createRoomDAO = (roomReference: string, room: IRoomType): Promise<string | null> => {
   return new Promise((resolve, reject) => {
@@ -12,12 +14,11 @@ export const createRoomDAO = (roomReference: string, room: IRoomType): Promise<s
         .then((response => {
           resolve(response.key)
         }))
-        .catch((reason) => {
-          console.log("erro")
-          resolve(reason.message)
+        .catch((reason: FirebaseError) => {
+          console.log("Erro: " + reason)
+          reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
       reject({ message: error as string });
     }
   });
@@ -38,9 +39,12 @@ export const joinRoomDAO = (path: string): Promise<DataSnapshot | string> => {
             resolve("Ups, nenhuma sala encontrada para o código fornecido")
           }
         })
+        .catch((reason: FirebaseError) => {
+          console.log("Erro: " + reason)
+          reject(reason)
+        })
     } catch (error) {
-      console.error("Erro: " + error)
-      reject({ message: "Tivemos um erro interno, tente novamente" })
+      reject({ message: error as string });
     }
   })
 }
@@ -54,12 +58,11 @@ export const createQuestionDAO = (roomReference: string, question: IQuestionType
         .then((response) => {
           resolve(response.key)
         })
-        .catch((reason) => {
-          console.log("erro")
+        .catch((reason: FirebaseError) => {
+          console.log("Erro: " + reason)
           reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
       reject({ message: error as string });
     }
   })
@@ -72,13 +75,12 @@ export const endRoomDAO = (roomReference: string, endedAt: Date): Promise<void> 
 
       update(ROOM_REF, { endedAt: endedAt })
         .then(resolve)
-        .catch((reason) => {
-          console.log("erro")
+        .catch((reason: FirebaseError) => {
+          console.log("Erro: " + reason)
           reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
-      reject({ message: "Tivemos um erro interno, tente novamente" })
+      reject({ message: error as string });
     }
   })
 }

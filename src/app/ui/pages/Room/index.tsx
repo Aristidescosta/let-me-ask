@@ -1,3 +1,4 @@
+import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
 import React, { useCallback, useState } from "react";
 import {
   Avatar,
@@ -10,72 +11,68 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 
+import { createQuestion } from "../../../repository/RoomRepository";
 import { useToastMessage } from "../../../chakra-ui-api/toast";
 import { IQuestionType } from "../../../types/QuestionType";
 import { LetButton } from "../../components/LetButton";
-import logoImg from "../../../../../public/logo.svg";
 import { RoomCode } from "../../components/RoomCode";
-import { useAuth } from "../../../states/useAuth";
-import { Link, useParams } from "react-router-dom";
-import { createQuestion } from "../../../repository/RoomRepository";
 import { Question } from "../../components/Question";
+import logoImg from "../../../../../public/logo.svg";
+import { ROOM_REF } from "../../../utils/constants";
+import { Link, useParams } from "react-router-dom";
 import { useRoom } from "../../../states/useRoom";
-
-import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
-import { ModalDelete } from "./ModalDelete";
+import { useAuth } from "../../../states/useAuth";
 import {
   likeQuestion,
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
-import { ROOM_REF } from "../../../utils/constants";
+import { ModalDelete } from "./ModalDelete";
 
 type IRoomParams = {
   id: string;
 };
 
 interface IRoomProps {
-  isAdmin?: boolean;
+  handleCheckQuestionAsAnswered?: (roomId: string, questionId: string) => void;
+  handleHighLightAnswered?: (roomId: string, questionId: string) => void;
   handleLikeQuestion?: (roomId: string, questionId: string) => void;
+  handleEndRoom?: (roomId: string) => Promise<void>;
   handleRemoveLikeQuestion?: (
     roomId: string,
     questionId: string,
     likeId: string
   ) => void;
-  isDeleting?: boolean;
   handleDeleteQuestion?: (
     roomId: string,
     questionId: string
   ) => Promise<string>;
   isEndedRoom?: boolean;
-  handleEndRoom?: (roomId: string) => Promise<void>;
-  handleHighLightAnswered?: (roomId: string, questionId: string) => void;
-  handleCheckQuestionAsAnswered?: (roomId: string, questionId: string) => void;
+  isDeleting?: boolean;
+  isAdmin?: boolean;
 }
 
 export const Room: React.FC<IRoomProps> = ({
+  handleCheckQuestionAsAnswered,
+  handleHighLightAnswered,
+  handleDeleteQuestion,
+  handleEndRoom,
   isEndedRoom,
   isDeleting,
   isAdmin,
-  handleDeleteQuestion,
-  handleHighLightAnswered,
-  handleCheckQuestionAsAnswered,
-  handleEndRoom,
 }) => {
   const { id: roomId } = useParams<IRoomParams>();
 
   const { toastMessage, ToastStatus } = useToastMessage();
-  const { user } = useAuth();
   const { questions, titleRoom } = useRoom(roomId);
+  const { user } = useAuth();
 
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  /* const [isUpdating, setIsUpdating] = useState(false); */
-
   const [question, setQuestion] = useState({
     content: "",
     id: "",
   });
-  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const copyRooCodeToClipboard = useCallback(() => {
     if (roomId) {
@@ -100,6 +97,7 @@ export const Room: React.FC<IRoomProps> = ({
       handleHighLightAnswered(roomId, questionId);
     }
   };
+
   const onHandleCheckQuestionAsAnswered = (questionId: string) => {
     if (roomId && handleCheckQuestionAsAnswered) {
       handleCheckQuestionAsAnswered(roomId, questionId);
@@ -199,8 +197,6 @@ export const Room: React.FC<IRoomProps> = ({
           },
           isHighLigted: false,
           isAnswered: false,
-          likeId: undefined,
-          likeCount: 0,
         };
         createQuestion(`rooms/${roomId}/questions`, question)
           .then(() => {
@@ -213,16 +209,18 @@ export const Room: React.FC<IRoomProps> = ({
           })
           .catch((error) => {
             toastMessage({
-              title:
-                error instanceof Error ? error.message : "Erro desconhecido",
-              statusToast: ToastStatus.WARNING,
+              title: error.message.message,
+              statusToast: ToastStatus.ERROR,
+              position: "top-right",
             });
           })
           .finally(() => setIsLoading(false));
       } catch (error) {
+        console.log("ERRO: " + error);
         toastMessage({
-          title: error instanceof Error ? error.message : "Erro desconhecido",
-          statusToast: ToastStatus.WARNING,
+          title: "Ops! Tivemos um pequeno erro, tente novamente!",
+          statusToast: ToastStatus.ERROR,
+          position: "top-right",
         });
         setIsLoading(false);
       }
