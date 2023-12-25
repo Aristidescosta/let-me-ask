@@ -1,5 +1,5 @@
 import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { MdDarkMode } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
@@ -32,6 +32,7 @@ import {
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
 import { ModalDelete } from "./ModalDelete";
+import { useNavigateTo } from "../../../react-router-dom";
 
 type IRoomParams = {
   id: string;
@@ -69,7 +70,8 @@ export const Room: React.FC<IRoomProps> = ({
 
   const { toastMessage, ToastStatus } = useToastMessage();
   const { questions, titleRoom } = useRoom(roomId);
-  const { user } = useAuth();
+  const { user, userAdmin } = useAuth();
+  const { navigateTo } = useNavigateTo();
 
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
@@ -79,6 +81,12 @@ export const Room: React.FC<IRoomProps> = ({
     content: "",
     id: "",
   });
+
+  useEffect(() => {
+    if (!userAdmin) {
+      navigateTo(`/rooms/${roomId}`);
+    }
+  }, [userAdmin]);
 
   const copyRooCodeToClipboard = useCallback(() => {
     if (roomId) {
@@ -454,6 +462,7 @@ export const Room: React.FC<IRoomProps> = ({
                         <Button
                           rightIcon={<BiLike />}
                           aria-label="Dar like na pergunta"
+                          color={question.likeId ? "#835AFD" : undefined}
                           onClick={() =>
                             onHandleLikeQuestion(question.id, question.likeId)
                           }

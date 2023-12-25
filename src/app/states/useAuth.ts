@@ -5,6 +5,8 @@ import { devtools, persist } from 'zustand/middleware'
 interface IUserStates {
   user: IUserType | undefined
   setUser: (user: IUserType) => void
+  userAdmin: boolean
+  setUserAdmin: (userAdmin: boolean) => void
 }
 
 export const useAuth = create<IUserStates>()(
@@ -12,7 +14,9 @@ export const useAuth = create<IUserStates>()(
     persist(
       (set) => ({
         user: undefined,
-        setUser: (user: IUserType) => set(() => ({ user: user }))
+        userAdmin: false,
+        setUser: (user: IUserType) => set(() => ({ user: user })),
+        setUserAdmin: (userAdmin: boolean) => set(() => ({ userAdmin: userAdmin }))
       }),
       {
         name: "user-storage"

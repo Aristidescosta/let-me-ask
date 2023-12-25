@@ -36,7 +36,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
   const TITLE_ROOM = isHome ? "Código da sala" : "Nome da sala";
   const TITLE_BUTTOM = isHome ? "Entrar na sala" : "Criar sala";
 
-  const { user } = useAuth();
+  const { user, setUserAdmin: setUserAdmin } = useAuth();
 
   const { toastMessage, ToastStatus } = useToastMessage();
 
@@ -89,9 +89,11 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               position: "top-right",
             });
           } else if (response.authorId === user?.id) {
+            setUserAdmin(true);
             navigateTo(`/admin/rooms/${newRoom}`);
           } else {
             navigateTo(`/rooms/${newRoom}`);
+            setUserAdmin(false);
           }
         })
         .catch((error) => {
