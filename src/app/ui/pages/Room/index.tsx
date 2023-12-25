@@ -9,6 +9,7 @@ import {
   Image,
   Text,
   Textarea,
+  Tooltip,
 } from "@chakra-ui/react";
 
 import { createQuestion } from "../../../repository/RoomRepository";
@@ -357,47 +358,56 @@ export const Room: React.FC<IRoomProps> = ({
                   <>
                     {!question.isAnswered && (
                       <>
-                        <IconButton
-                          isRound={true}
-                          variant="solid"
-                          /* colorScheme="teal" */
-                          aria-label="Marcar pergunta como respondida"
-                          fontSize="20px"
-                          icon={<BiCheckCircle />}
-                          onClick={() =>
-                            onHandleCheckQuestionAsAnswered(question.id)
-                          }
-                        />
+                        <Tooltip label="Marcar pergunta como respondida">
+                          <IconButton
+                            isRound={true}
+                            variant="solid"
+                            aria-label="Marcar pergunta como respondida"
+                            fontSize="20px"
+                            icon={<BiCheckCircle />}
+                            onClick={() =>
+                              onHandleCheckQuestionAsAnswered(question.id)
+                            }
+                          />
+                        </Tooltip>
 
-                        <IconButton
-                          icon={<BiComment />}
-                          aria-label="Dar destaque a pergunta"
-                          variant="outline"
-                          onClick={() => onHandleHighLightAnswered(question.id)}
-                        />
+                        <Tooltip label="Dar destaque a pergunta">
+                          <IconButton
+                            icon={<BiComment />}
+                            aria-label="Dar destaque a pergunta"
+                            variant="outline"
+                            onClick={() =>
+                              onHandleHighLightAnswered(question.id)
+                            }
+                          />
+                        </Tooltip>
                       </>
                     )}
 
-                    <IconButton
-                      icon={<BiTrash />}
-                      aria-label="Eliminar pergunta"
-                      variant="outline"
-                      onClick={() =>
-                        onOpenModalDelete(question.content, question.id)
-                      }
-                    />
+                    <Tooltip label="Eliminar pergunta">
+                      <IconButton
+                        icon={<BiTrash />}
+                        aria-label="Eliminar pergunta"
+                        variant="outline"
+                        onClick={() =>
+                          onOpenModalDelete(question.content, question.id)
+                        }
+                      />
+                    </Tooltip>
                   </>
                 ) : (
                   !question.isAnswered && (
-                    <Button
-                      rightIcon={<BiLike />}
-                      aria-label="Dar like na pergunta"
-                      onClick={() =>
-                        onHandleLikeQuestion(question.id, question.likeId)
-                      }
-                    >
-                      {question.likeCount > 0 && question.likeCount}
-                    </Button>
+                    <Tooltip label="Dar like na pergunta">
+                      <Button
+                        rightIcon={<BiLike />}
+                        aria-label="Dar like na pergunta"
+                        onClick={() =>
+                          onHandleLikeQuestion(question.id, question.likeId)
+                        }
+                      >
+                        {question.likeCount > 0 && question.likeCount}
+                      </Button>
+                    </Tooltip>
                   )
                 )}
               </Box>
