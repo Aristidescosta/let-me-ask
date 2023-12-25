@@ -1,17 +1,35 @@
-import { Home } from "./pages/Home";
-import { NewRom } from "./pages/NewRom";
-import { Routes, Route } from "react-router-dom";
-import { AuthContextProvider } from "./contexts/AuthContext";
+import { ChakraProvider } from "@chakra-ui/react";
+import { useEffect } from "react";
 
-function App() {
+import { MasterMenuRoutes } from "./app/routes/Routes";
+import { auth, authApp } from "./app/firebase";
+import { useAuth } from "./app/states/useAuth";
+
+export const App = () => {
+  const { setUser } = useAuth();
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(authApp, (user) => {
+      console.log(user);
+      if (user) {
+        const { displayName, photoURL, uid } = user;
+        if (!displayName || !uid) {
+          throw new Error("Falta informação da conta Google");
+        }
+        setUser({
+          id: uid,
+          avatar: photoURL,
+          name: displayName,
+        });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
   return (
-    <AuthContextProvider>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/rooms/new" element={<NewRom />} />
-      </Routes>
-    </AuthContextProvider>
+    <ChakraProvider>
+      <MasterMenuRoutes />
+    </ChakraProvider>
   );
-}
-
-export default App;
+};
