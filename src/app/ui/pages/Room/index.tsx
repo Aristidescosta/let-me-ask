@@ -100,9 +100,18 @@ export const Room: React.FC<IRoomProps> = ({
   }, [roomId]);
 
   const handleLikeQuestion = (roomId: string, questionId: string) => {
-    const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}/likes`;
-    if (user) {
-      likeQuestion(PATH, user.id);
+    try {
+      const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}/likes`;
+      if (user) {
+        likeQuestion(PATH, user.id);
+      }
+    } catch (error) {
+      console.log("ERRO: " + error);
+      toastMessage({
+        title: "Ops! Tivemos um pequeno erro, tente novamente!",
+        statusToast: ToastStatus.ERROR,
+        position: "top-right",
+      });
     }
   };
 
@@ -400,7 +409,7 @@ export const Room: React.FC<IRoomProps> = ({
         </FormControl>
 
         <Box mt={"32px"} display={"flex"} flexDir={"column"}>
-          {questions.map((question) => (
+          {questions.reverse().map((question) => (
             <Question
               key={question.id}
               author={question.author}

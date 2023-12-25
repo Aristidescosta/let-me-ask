@@ -1,3 +1,4 @@
+import React, { FormEvent, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import {
@@ -9,16 +10,15 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import React, { FormEvent, useState } from "react";
 
 import illustration from "../../../../public/illustration.svg";
 import logo from "../../../../public/logo.svg";
 
-import { LetButton } from "../components/LetButton";
-import { useAuth } from "../../states/useAuth";
 import { useToastMessage } from "../../chakra-ui-api/toast";
-import { IRoomType } from "../../types/RoomType";
 import { useNavigateTo } from "../../react-router-dom";
+import { LetButton } from "../components/LetButton";
+import { IRoomType } from "../../types/RoomType";
+import { useAuth } from "../../states/useAuth";
 
 interface IBaseLayoutPageProps {
   isHome?: boolean;
@@ -46,34 +46,47 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
   const { navigateTo } = useNavigateTo();
 
   const onCreateRoom = (event: FormEvent) => {
-    event.preventDefault();
-    if (user) {
-      setIsLoading(true);
-      handleCreateRoom?.({
-        title: newRoom,
-        authorId: user.id,
-        questions: [],
-      })
-        .then((response) => {
-          if (response.includes("sala")) {
+    try {
+      event.preventDefault();
+      if (user) {
+        setIsLoading(true);
+        handleCreateRoom?.({
+          title: newRoom,
+          authorId: user.id,
+          questions: [],
+        })
+          .then((response) => {
+            if (response.includes("sala")) {
+              toastMessage({
+                title: response,
+                statusToast: ToastStatus.INFO,
+                position: "top-right",
+              });
+            } else {
+              navigateTo(`/rooms/${response}`);
+            }
+          })
+          .catch((error) => {
+            const ERROR_MESSAGE =
+              typeof error.message === "object"
+                ? error.message.message
+                : error.message;
+
             toastMessage({
-              title: response,
-              statusToast: ToastStatus.INFO,
+              title: ERROR_MESSAGE,
+              statusToast: ToastStatus.ERROR,
               position: "top-right",
             });
-          } else {
-            navigateTo(`/rooms/${response}`);
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-          toastMessage({
-            title: "Tivemos um erro interno, tente novamente",
-            statusToast: ToastStatus.SUCCESS,
-            position: "top-right",
-          });
-        })
-        .finally(() => setIsLoading(false));
+          })
+          .finally(() => setIsLoading(false));
+      }
+    } catch (error) {
+      console.log("ERRO: " + error);
+      toastMessage({
+        title: "Ops! Tivemos um pequeno erro, tente novamente!",
+        statusToast: ToastStatus.ERROR,
+        position: "top-right",
+      });
     }
   };
 
@@ -110,7 +123,12 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
         })
         .finally(() => setIsLoading(false));
     } catch (error) {
-      console.log("ERRO:");
+      console.log("ERRO: " + error);
+      toastMessage({
+        title: "Ops! Tivemos um pequeno erro, tente novamente!",
+        statusToast: ToastStatus.ERROR,
+        position: "top-right",
+      });
     }
   };
 

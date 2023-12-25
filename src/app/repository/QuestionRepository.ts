@@ -1,15 +1,22 @@
+import { FirebaseError } from "firebase/app"
 import { checkQuestionAsAnsweredDAO, highLightAnsweredDAO, likeQuestionDAO, removeLikeQuestionDAO, removeQuestion } from "../databases/QuestionDAO"
 
-export const likeQuestion = (questionReference: string, authorId: string) => {
+export const likeQuestion = (questionReference: string, authorId: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    likeQuestionDAO(questionReference, authorId)
-      .then((response) => {
-        if (response) {
-          resolve
-        }
-        else reject({ message: "Erro ao concluir essa acção!" })
-      })
-      .catch((error) => reject(error.message))
+    try {
+      likeQuestionDAO(questionReference, authorId)
+        .then((response) => {
+          if (response) {
+            resolve()
+          }
+          else reject({ message: "Erro ao concluir essa acção!" })
+        })
+        .catch((reason: FirebaseError) => {
+          reject(reason)
+        })
+    } catch (error) {
+      reject({ message: error as string });
+    }
   })
 }
 
@@ -18,11 +25,10 @@ export const removeLikeQuestion = (likeReference: string): Promise<void> => {
     try {
       removeLikeQuestionDAO(likeReference)
         .then(resolve)
-        .catch((reason) => {
+        .catch((reason: FirebaseError) => {
           reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
       reject({ message: error as string });
     }
   })
@@ -33,11 +39,10 @@ export const deleteQuestion = (likeReference: string): Promise<void> => {
     try {
       removeQuestion(likeReference)
         .then(resolve)
-        .catch((reason) => {
+        .catch((reason: FirebaseError) => {
           reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
       reject({ message: error as string });
     }
   })
@@ -48,11 +53,10 @@ export const checkQuestionAsAnswered = (questionReference: string): Promise<void
     try {
       checkQuestionAsAnsweredDAO(questionReference)
         .then(resolve)
-        .catch((reason) => {
+        .catch((reason: FirebaseError) => {
           reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
       reject({ message: error as string });
     }
   })
@@ -63,13 +67,11 @@ export const highLightAnswered = (questionReference: string): Promise<void> => {
     try {
       highLightAnsweredDAO(questionReference)
         .then(resolve)
-        .catch((reason) => {
-          console.log("erro")
+        .catch((reason: FirebaseError) => {
           reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
-      reject({ message: "Tivemos um erro interno, tente novamente" })
+      reject({ message: error as string });
     }
   })
 }

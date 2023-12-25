@@ -9,7 +9,6 @@ export const likeQuestionDAO = (questionReference: string, authorId: string): Pr
 
       push(ROOM_REF, { authorId })
         .then((response => {
-          console.log(questionReference)
           resolve(response.key)
         }))
         .catch((reason) => {
