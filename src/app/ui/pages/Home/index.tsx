@@ -6,6 +6,7 @@ import { useNavigateTo } from "../../../react-router-dom";
 import { ROOM_REF } from "../../../utils/constants";
 import { BaseLayoutPage } from "../BaseLayoutPage";
 import { useAuth } from "../../../states/useAuth";
+import { IRoomType } from "../../../types/RoomType";
 
 export const Home: React.FC = () => {
   const { navigateTo } = useNavigateTo();
@@ -31,7 +32,7 @@ export const Home: React.FC = () => {
     }
   };
 
-  const handleJoinRoom = (roomCode: string) => {
+  const handleJoinRoom = (roomCode: string): Promise<string | IRoomType> => {
     return new Promise((resolve, reject) => {
       joinRoom(ROOM_REF, roomCode)
         .then((response) => {

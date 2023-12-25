@@ -23,10 +23,15 @@ export const AdminRoom: React.FC = () => {
     questionId: string
   ) => {
     const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}`;
-    checkQuestionAsAnswered(PATH).catch(() => {
+    checkQuestionAsAnswered(PATH).catch((error) => {
+      const ERROR_MESSAGE =
+        typeof error.message === "object"
+          ? error.message.message
+          : error.message;
+
       toastMessage({
-        title: "Houve um pequeno erro interno, tente novamente",
-        statusToast: ToastStatus.WARNING,
+        title: ERROR_MESSAGE,
+        statusToast: ToastStatus.ERROR,
         position: "top-right",
       });
     });
@@ -34,10 +39,15 @@ export const AdminRoom: React.FC = () => {
 
   const handleHighLightAnswered = (roomId: string, questionId: string) => {
     const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}`;
-    highLightAnswered(PATH).catch(() => {
+    highLightAnswered(PATH).catch((error) => {
+      const ERROR_MESSAGE =
+        typeof error.message === "object"
+          ? error.message.message
+          : error.message;
+
       toastMessage({
-        title: "Houve um pequeno erro interno, tente novamente",
-        statusToast: ToastStatus.WARNING,
+        title: ERROR_MESSAGE,
+        statusToast: ToastStatus.ERROR,
         position: "top-right",
       });
     });
@@ -47,7 +57,7 @@ export const AdminRoom: React.FC = () => {
     roomId: string,
     questionId: string
   ): Promise<string> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const PATH = `${ROOM_REF}/${roomId}/questions/${questionId}`;
       setIsDeleting(true);
       removeLikeQuestion(PATH)
@@ -55,15 +65,23 @@ export const AdminRoom: React.FC = () => {
           resolve("Pergunta eliminada com sucesso");
         })
         .catch((error) => {
-          console.error(error);
-          reject({ message: "Tivemos um erro interno, tente novamente!" });
+          const ERROR_MESSAGE =
+            typeof error.message === "object"
+              ? error.message.message
+              : error.message;
+
+          toastMessage({
+            title: ERROR_MESSAGE,
+            statusToast: ToastStatus.ERROR,
+            position: "top-right",
+          });
         })
         .finally(() => setIsDeleting(false));
     });
   };
 
   const handleEndRoom = (roomId: string): Promise<void> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const PATH = `${ROOM_REF}/${roomId}`;
       setIsEndedRoom(true);
       endRoom(PATH)
@@ -71,9 +89,17 @@ export const AdminRoom: React.FC = () => {
           navigateTo("/");
           resolve;
         })
-        .catch((reason) => {
-          console.log("erro");
-          reject(reason);
+        .catch((error) => {
+          const ERROR_MESSAGE =
+            typeof error.message === "object"
+              ? error.message.message
+              : error.message;
+
+          toastMessage({
+            title: ERROR_MESSAGE,
+            statusToast: ToastStatus.ERROR,
+            position: "top-right",
+          });
         })
         .finally(() => setIsEndedRoom(false));
     });

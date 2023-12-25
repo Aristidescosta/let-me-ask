@@ -1,5 +1,6 @@
 import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
 import React, { useCallback, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { MdDarkMode } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
 import {
@@ -14,15 +15,16 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 
+import { StorageEnum, deleteData } from "../../../databases/LocalStorageDao";
 import { createQuestion } from "../../../repository/RoomRepository";
 import { useToastMessage } from "../../../chakra-ui-api/toast";
+import { signOut } from "../../../repository/AuthRepository";
 import { IQuestionType } from "../../../types/QuestionType";
 import { LetButton } from "../../components/LetButton";
 import { RoomCode } from "../../components/RoomCode";
 import { Question } from "../../components/Question";
 import logoImg from "../../../../../public/logo.svg";
 import { ROOM_REF } from "../../../utils/constants";
-import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRoom } from "../../../states/useRoom";
 import { useAuth } from "../../../states/useAuth";
 import {
@@ -30,8 +32,6 @@ import {
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
 import { ModalDelete } from "./ModalDelete";
-import { signOut } from "../../../repository/AuthRepository";
-import { StorageEnum, deleteData } from "../../../databases/LocalStorageDao";
 
 type IRoomParams = {
   id: string;
@@ -70,7 +70,6 @@ export const Room: React.FC<IRoomProps> = ({
   const { toastMessage, ToastStatus } = useToastMessage();
   const { questions, titleRoom } = useRoom(roomId);
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
@@ -241,7 +240,7 @@ export const Room: React.FC<IRoomProps> = ({
         console.log(response);
         if (response) {
           deleteData(StorageEnum.UserStorage);
-          window.location.reload()
+          window.location.reload();
         }
       })
       .catch((error) => {
@@ -401,69 +400,71 @@ export const Room: React.FC<IRoomProps> = ({
               isAnswered={question.isAnswered}
               isHighLigted={question.isHighLigted}
             >
-              <Box
-                display={"flex"}
-                gap={2}
-                alignItems={"center"}
-                justifyContent={"flex-end"}
-              >
-                {isAdmin ? (
-                  <>
-                    {!question.isAnswered && (
-                      <>
-                        <Tooltip label="Marcar pergunta como respondida">
-                          <IconButton
-                            isRound={true}
-                            variant="solid"
-                            aria-label="Marcar pergunta como respondida"
-                            fontSize="20px"
-                            icon={<BiCheckCircle />}
-                            onClick={() =>
-                              onHandleCheckQuestionAsAnswered(question.id)
-                            }
-                          />
-                        </Tooltip>
+              {user && (
+                <Box
+                  display={"flex"}
+                  gap={2}
+                  alignItems={"center"}
+                  justifyContent={"flex-end"}
+                >
+                  {isAdmin ? (
+                    <>
+                      {!question.isAnswered && (
+                        <>
+                          <Tooltip label="Marcar pergunta como respondida">
+                            <IconButton
+                              isRound={true}
+                              variant="solid"
+                              aria-label="Marcar pergunta como respondida"
+                              fontSize="20px"
+                              icon={<BiCheckCircle />}
+                              onClick={() =>
+                                onHandleCheckQuestionAsAnswered(question.id)
+                              }
+                            />
+                          </Tooltip>
 
-                        <Tooltip label="Dar destaque a pergunta">
-                          <IconButton
-                            icon={<BiComment />}
-                            aria-label="Dar destaque a pergunta"
-                            variant="outline"
-                            onClick={() =>
-                              onHandleHighLightAnswered(question.id)
-                            }
-                          />
-                        </Tooltip>
-                      </>
-                    )}
+                          <Tooltip label="Dar destaque a pergunta">
+                            <IconButton
+                              icon={<BiComment />}
+                              aria-label="Dar destaque a pergunta"
+                              variant="outline"
+                              onClick={() =>
+                                onHandleHighLightAnswered(question.id)
+                              }
+                            />
+                          </Tooltip>
+                        </>
+                      )}
 
-                    <Tooltip label="Eliminar pergunta">
-                      <IconButton
-                        icon={<BiTrash />}
-                        aria-label="Eliminar pergunta"
-                        variant="outline"
-                        onClick={() =>
-                          onOpenModalDelete(question.content, question.id)
-                        }
-                      />
-                    </Tooltip>
-                  </>
-                ) : (
-                  !question.isAnswered && (
-                    <Tooltip label="Dar like na pergunta">
-                      <Button
-                        rightIcon={<BiLike />}
-                        aria-label="Dar like na pergunta"
-                        onClick={() =>
-                          onHandleLikeQuestion(question.id, question.likeId)
-                        }
-                      >
-                        {question.likeCount > 0 && question.likeCount}
-                      </Button>
-                    </Tooltip>
-                  )
-                )}
-              </Box>
+                      <Tooltip label="Eliminar pergunta">
+                        <IconButton
+                          icon={<BiTrash />}
+                          aria-label="Eliminar pergunta"
+                          variant="outline"
+                          onClick={() =>
+                            onOpenModalDelete(question.content, question.id)
+                          }
+                        />
+                      </Tooltip>
+                    </>
+                  ) : (
+                    !question.isAnswered && (
+                      <Tooltip label="Dar like na pergunta">
+                        <Button
+                          rightIcon={<BiLike />}
+                          aria-label="Dar like na pergunta"
+                          onClick={() =>
+                            onHandleLikeQuestion(question.id, question.likeId)
+                          }
+                        >
+                          {question.likeCount > 0 && question.likeCount}
+                        </Button>
+                      </Tooltip>
+                    )
+                  )}
+                </Box>
+              )}
             </Question>
           ))}
         </Box>

@@ -49,12 +49,11 @@ export const checkQuestionAsAnswered = (questionReference: string): Promise<void
       checkQuestionAsAnsweredDAO(questionReference)
         .then(resolve)
         .catch((reason) => {
-          console.log("erro")
           reject(reason)
         })
     } catch (error) {
       console.error("Erro: " + error)
-      reject({ message: "Tivemos um erro interno, tente novamente" })
+      reject({ message: error as string });
     }
   })
 }

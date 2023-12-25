@@ -24,7 +24,7 @@ interface IBaseLayoutPageProps {
   isHome?: boolean;
   handleSignInWithGoogle?: () => void;
   handleCreateRoom?: (room: IRoomType) => Promise<string>;
-  handleJoinRoom?: (roomCode: string) => Promise<unknown>;
+  handleJoinRoom?: (roomCode: string) => Promise<string | IRoomType>;
 }
 
 export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
@@ -88,6 +88,8 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               statusToast: ToastStatus.INFO,
               position: "top-right",
             });
+          } else if (response.authorId === user?.id) {
+            navigateTo(`/admin/rooms/${newRoom}`);
           } else {
             navigateTo(`/rooms/${newRoom}`);
           }

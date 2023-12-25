@@ -1,5 +1,6 @@
 import { push, remove, update } from "firebase/database"
 import { getDatabaseRef } from "../firebase/database"
+import { FirebaseError } from "firebase/app";
 
 export const likeQuestionDAO = (questionReference: string, authorId: string): Promise<string | null> => {
   return new Promise((resolve, reject) => {
@@ -64,13 +65,12 @@ export const checkQuestionAsAnsweredDAO = (questionReference: string): Promise<v
 
       update(ROOM_REF, { isAnswered: true })
         .then(resolve)
-        .catch((reason) => {
-          console.log("erro")
+        .catch((reason: FirebaseError) => {
+          console.log("Erro: " + reason)
           reject(reason)
         })
     } catch (error) {
-      console.error("Erro: " + error)
-      reject({ message: "Tivemos um erro interno, tente novamente" })
+      reject({ message: error as string });
     }
   })
 }
