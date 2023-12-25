@@ -5,6 +5,7 @@ import { ROOM_REF } from "../../../utils/constants";
 import { IRoomType } from "../../../types/RoomType";
 
 export const NewRoom: React.FC = () => {
+  console.log("Nova sala");
   const handleCreateRoom = (room: IRoomType): Promise<string> => {
     return new Promise((resolve, reject) => {
       createRoom(ROOM_REF, room)

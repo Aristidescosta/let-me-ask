@@ -1,5 +1,7 @@
 import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
 import React, { useCallback, useState } from "react";
+import { MdDarkMode } from "react-icons/md";
+import { CiLogout } from "react-icons/ci";
 import {
   Avatar,
   Box,
@@ -20,7 +22,7 @@ import { RoomCode } from "../../components/RoomCode";
 import { Question } from "../../components/Question";
 import logoImg from "../../../../../public/logo.svg";
 import { ROOM_REF } from "../../../utils/constants";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRoom } from "../../../states/useRoom";
 import { useAuth } from "../../../states/useAuth";
 import {
@@ -28,6 +30,8 @@ import {
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
 import { ModalDelete } from "./ModalDelete";
+import { signOut } from "../../../repository/AuthRepository";
+import { StorageEnum, deleteData } from "../../../databases/LocalStorageDao";
 
 type IRoomParams = {
   id: string;
@@ -66,10 +70,12 @@ export const Room: React.FC<IRoomProps> = ({
   const { toastMessage, ToastStatus } = useToastMessage();
   const { questions, titleRoom } = useRoom(roomId);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingSignOut, setIsLoadingSignOut] = useState(false);
   const [question, setQuestion] = useState({
     content: "",
     id: "",
@@ -228,30 +234,77 @@ export const Room: React.FC<IRoomProps> = ({
     }
   }, [newQuestion, user, roomId]);
 
+  const handleSignOut = () => {
+    setIsLoadingSignOut(true);
+    signOut()
+      .then((response) => {
+        console.log(response);
+        if (response) {
+          deleteData(StorageEnum.UserStorage);
+          window.location.reload()
+        }
+      })
+      .catch((error) => {
+        toastMessage({
+          title: error.message.message,
+          statusToast: ToastStatus.ERROR,
+          position: "top-right",
+        });
+      })
+      .finally(() => setIsLoadingSignOut(false));
+  };
+
   return (
     <Box>
       <Box as="header" padding={24} borderBottom={"1px solid #e2e2e2"}>
-        <Box
-          maxW={1120}
-          margin={"0 auto"}
-          display={"flex"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-        >
-          <Image src={logoImg} alt="logo do let me ask" maxH={45} />
-          <Box display={"flex"} alignItems={"center"} gap={4}>
-            <RoomCode
-              code={roomId}
-              copyRooCodeToClipboard={copyRooCodeToClipboard}
-            />
-            {isAdmin && (
-              <LetButton
-                onClick={() => handleEndRoom?.(roomId ?? "")}
-                isLoading={isEndedRoom}
-                title="Encerrar a sala"
-                isOutlined={isAdmin}
-              />
+        <Box maxW={1120} margin={"0 auto"}>
+          <Box
+            display={"flex"}
+            justifyContent={"flex-end"}
+            alignItems={"center"}
+            mb={4}
+            gap={4}
+          >
+            {user && (
+              <Button
+                variant={"ghost"}
+                aria-label="Terminar secção"
+                rightIcon={<CiLogout />}
+                onClick={handleSignOut}
+                isLoading={isLoadingSignOut}
+              >
+                Sair
+              </Button>
             )}
+
+            <IconButton
+              aria-label="Trocar de tema"
+              isRound={true}
+              variant={"ghost"}
+              fontSize="20px"
+              icon={<MdDarkMode />}
+            />
+          </Box>
+          <Box
+            display={"flex"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Image src={logoImg} alt="logo do let me ask" maxH={45} />
+            <Box display={"flex"} alignItems={"center"} gap={4}>
+              <RoomCode
+                code={roomId}
+                copyRooCodeToClipboard={copyRooCodeToClipboard}
+              />
+              {isAdmin && (
+                <LetButton
+                  onClick={() => handleEndRoom?.(roomId ?? "")}
+                  isLoading={isEndedRoom}
+                  title="Encerrar a sala"
+                  isOutlined={isAdmin}
+                />
+              )}
+            </Box>
           </Box>
         </Box>
       </Box>

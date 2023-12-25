@@ -93,10 +93,14 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
           }
         })
         .catch((error) => {
-          console.log(error);
+          const ERROR_MESSAGE =
+            typeof error.message === "object"
+              ? error.message.message
+              : error.message;
+
           toastMessage({
-            title: "Tivemos um erro interno, tente novamente",
-            statusToast: ToastStatus.SUCCESS,
+            title: ERROR_MESSAGE,
+            statusToast: ToastStatus.ERROR,
             position: "top-right",
           });
         })

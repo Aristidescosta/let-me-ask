@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, UserCredential, signInWithPopup } from "firebase/auth"
+import { GoogleAuthProvider, UserCredential, signInWithPopup, signOut } from "firebase/auth"
 import { authApp } from ".."
 
 export const sigInWithGoogle = async (): Promise<UserCredential> => {
@@ -13,7 +13,15 @@ export const sigInWithGoogle = async (): Promise<UserCredential> => {
       })
       .catch(error => {
         GoogleAuthProvider.credentialFromError(error)
-        reject(error.message)
+        reject(error)
       })
+  })
+}
+
+export const logout = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    signOut(authApp)
+      .then(resolve)
+      .catch(error => reject(error))
   })
 }
