@@ -1,7 +1,7 @@
 import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
 import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { MdDarkMode } from "react-icons/md";
+import { MdDarkMode, MdOutlineLightMode  } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
 import {
   Avatar,
@@ -13,6 +13,7 @@ import {
   Text,
   Textarea,
   Tooltip,
+  useColorMode,
 } from "@chakra-ui/react";
 
 import { StorageEnum, deleteData } from "../../../databases/LocalStorageDao";
@@ -270,6 +271,8 @@ export const Room: React.FC<IRoomProps> = ({
       .finally(() => setIsLoadingSignOut(false));
   };
 
+  const { colorMode, toggleColorMode } = useColorMode()
+
   return (
     <Box>
       <Box as="header" padding={24} borderBottom={"1px solid #e2e2e2"}>
@@ -293,13 +296,17 @@ export const Room: React.FC<IRoomProps> = ({
               </Button>
             )}
 
-            <IconButton
+              <Button onClick={toggleColorMode}>
+                { colorMode === "dark" ? <MdOutlineLightMode /> : <MdDarkMode /> }
+              </Button>
+
+            {/* <IconButton
               aria-label="Trocar de tema"
               isRound={true}
               variant={"ghost"}
               fontSize="20px"
               icon={<MdDarkMode />}
-            />
+            /> */}
           </Box>
           <Box
             display={"flex"}
