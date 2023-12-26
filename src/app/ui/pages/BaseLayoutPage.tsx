@@ -67,6 +67,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
                 position: "top-right",
               });
             } else {
+              setUserAdmin(true);
               navigateTo(`/rooms/${response}`);
             }
           })

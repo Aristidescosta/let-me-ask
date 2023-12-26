@@ -30,6 +30,9 @@ export const createRoom = (roomReference: string, room: IRoomType): Promise<stri
 export const joinRoom = (roomReference: string, roomCode: string): Promise<DataSnapshot | string> => {
   return new Promise((resolve, reject) => {
     try {
+      if (roomCode.trim() === "") {
+        resolve("Informe o código da sala")
+      }
       const PATH = `/${roomReference}/${roomCode}`
       joinRoomDAO(PATH)
         .then((response) => {
