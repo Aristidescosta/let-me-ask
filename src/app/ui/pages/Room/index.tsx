@@ -421,7 +421,7 @@ export const Room: React.FC<IRoomProps> = ({
         </FormControl>
 
         <Box mt={"32px"} display={"flex"} flexDir={"column"}>
-          {questions.reverse().map((question) => (
+          {questions.map((question) => (
             <Question
               key={question.id}
               author={question.author}
