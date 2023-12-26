@@ -1,4 +1,4 @@
-import { Avatar, Box, Text } from "@chakra-ui/react";
+import { Avatar, Box, Text, useColorModeValue } from "@chakra-ui/react";
 import React from "react";
 
 interface IQuestionProps {
@@ -19,18 +19,24 @@ export const Question: React.FC<IQuestionProps> = ({
   isAnswered = false,
   isHighLigted = false,
 }) => {
+
+  const BACKGROUND = useColorModeValue('#FFFFFF', '#1A202C')
+  const COLOR = useColorModeValue('#29292e', '#ffffffeb')
+  const BACKGROUND_ANSWERED = useColorModeValue('#DBDCDD', '#29292e')
+  const BACKGROUND_HIGHLIGTED = useColorModeValue('#F4F0FF', '#1A202C')
+
   return (
     <Box
       bgColor={
         isHighLigted && !isAnswered
-          ? "#F4F0FF"
+          ? BACKGROUND_HIGHLIGTED
           : isAnswered
-          ? "#DBDCDD"
-          : "#fefefe"
+          ? BACKGROUND_ANSWERED
+          : BACKGROUND
       }
       border={isHighLigted && !isAnswered ? "1px solid #835AFD" : "none"}
       borderRadius={8}
-      boxShadow={!isAnswered ? "-7px 8px 32px 11px rgba(0,0,0,0.1)" : ""}
+      boxShadow={"dark-lg"}
       p={"24px"}
       sx={{
         "& + div": {
@@ -38,7 +44,7 @@ export const Question: React.FC<IQuestionProps> = ({
         },
       }}
     >
-      <Text color={"#29292e"}>{content}</Text>
+      <Text color={COLOR}>{content}</Text>
 
       <Box
         as="footer"
