@@ -68,7 +68,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               });
             } else {
               setUserAdmin(true);
-              navigateTo(`/rooms/${response}`);
+              navigateTo(`/admin/rooms/${newRoom}`);
             }
           })
           .catch((error) => {
@@ -158,7 +158,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
         <Image
           src={illustration}
           alt="Ilustração simbolizando perguntas e respostas"
-          /* maxW={320} */
+          maxW={320}
         />
         <Text
           as={"strong"}

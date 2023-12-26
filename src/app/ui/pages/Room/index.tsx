@@ -1,7 +1,8 @@
 import { BiLike, BiComment, BiTrash, BiCheckCircle } from "react-icons/bi";
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
 import { MdDarkMode, MdOutlineLightMode } from "react-icons/md";
+import { Link, useParams } from "react-router-dom";
+import { GoArrowSwitch } from "react-icons/go";
 import { CiLogout } from "react-icons/ci";
 import {
   Avatar,
@@ -29,7 +30,7 @@ import { LetButton } from "../../components/LetButton";
 import { RoomCode } from "../../components/RoomCode";
 import { Question } from "../../components/Question";
 import logoImg from "../../../../../public/logo.svg";
-import { ROOM_REF } from "../../../utils/constants";
+import { ROOM_REF, ROUTE_HOME } from "../../../utils/constants";
 import { useRoom } from "../../../states/useRoom";
 import { useAuth } from "../../../states/useAuth";
 import {
@@ -38,7 +39,6 @@ import {
 } from "../../../repository/QuestionRepository";
 import { ModalDelete } from "./ModalDelete";
 import { useNavigateTo } from "../../../react-router-dom";
-
 type IRoomParams = {
   id: string;
 };
@@ -276,6 +276,10 @@ export const Room: React.FC<IRoomProps> = ({
       .finally(() => setIsLoadingSignOut(false));
   };
 
+  const handleSwitchRoom = () =>{
+    navigateTo(ROUTE_HOME.route)
+  }
+
   const { colorMode, toggleColorMode } = useColorMode();
 
   const color = useColorModeValue("#29292e", "#ffffffeb");
@@ -303,21 +307,26 @@ export const Room: React.FC<IRoomProps> = ({
                 onClick={handleSignOut}
                 isLoading={isLoadingSignOut}
               >
-                Sair
+                Terminar secção
               </Button>
             )}
 
-            <Button onClick={toggleColorMode}>
-              {colorMode === "dark" ? <MdOutlineLightMode /> : <MdDarkMode />}
+            <Button
+              variant={"ghost"}
+              aria-label="Alternar sala"
+              onClick={handleSwitchRoom}
+              rightIcon={<GoArrowSwitch />}
+            >
+              Trocar de sala
             </Button>
 
-            {/* <IconButton
-              aria-label="Trocar de tema"
-              isRound={true}
+            <Button
               variant={"ghost"}
-              fontSize="20px"
-              icon={<MdDarkMode />}
-            /> */}
+              aria-label="Escolher tema"
+              onClick={toggleColorMode}
+            >
+              {colorMode === "dark" ? <MdOutlineLightMode /> : <MdDarkMode />}
+            </Button>
           </Box>
           <Box
             display={"flex"}
@@ -377,75 +386,63 @@ export const Room: React.FC<IRoomProps> = ({
           )}
         </Box>
 
-        {!isAdmin && questions.length === 0 && (
-          <FormControl>
-            <Textarea
-              p={"16px"}
-              boxShadow={"base"}
-              minH={130}
-              resize={"vertical"}
-              placeholder={`O que você quer ${
-                isAdmin ? "responder" : "perguntar"
-              }?`}
-              onChange={(event) => setNewQuestion(event.target.value)}
-              value={newQuestion}
-            />
+        <FormControl>
+          <Textarea
+            p={"16px"}
+            boxShadow={"base"}
+            minH={130}
+            resize={"vertical"}
+            placeholder={`O que você quer ${
+              isAdmin ? "responder" : "perguntar"
+            }?`}
+            onChange={(event) => setNewQuestion(event.target.value)}
+            value={newQuestion}
+          />
 
-            <Box
-              display={"flex"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-              mt={16}
-            >
-              {!user ? (
-                <Text
-                  as="span"
+          <Box
+            display={"flex"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            mt={16}
+          >
+            {!user ? (
+              <Text as="span" fontSize={14} color={"#737380"} fontWeight={500}>
+                Para enviar mensagem,{" "}
+                <Button
+                  bgColor={"transparent"}
+                  color={"#835afd"}
+                  textDecor={"underline"}
                   fontSize={14}
-                  color={"#737380"}
                   fontWeight={500}
                 >
-                  Para enviar mensagem,{" "}
-                  <Button
-                    bgColor={"transparent"}
-                    color={"#835afd"}
-                    textDecor={"underline"}
-                    fontSize={14}
-                    fontWeight={500}
-                  >
-                    <Link to={"/"}>faça seu login</Link>
-                  </Button>
+                  <Link to={"/"}>faça seu login</Link>
+                </Button>
+              </Text>
+            ) : (
+              <Box
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                gap={5}
+              >
+                <Avatar
+                  src={user.avatar ? user.avatar : undefined}
+                  name={user.name}
+                />
+                <Text color={color} fontWeight={"500"} fontSize={14} as="span">
+                  {user.name}
                 </Text>
-              ) : (
-                <Box
-                  display={"flex"}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                  gap={5}
-                >
-                  <Avatar
-                    src={user.avatar ? user.avatar : undefined}
-                    name={user.name}
-                  />
-                  <Text
-                    color={color}
-                    fontWeight={"500"}
-                    fontSize={14}
-                    as="span"
-                  >
-                    {user.name}
-                  </Text>
-                </Box>
-              )}
-              <LetButton
-                disabled={!user}
-                onClick={handleSendQuestion}
-                title="Enviar pergunta"
-                type="submit"
-                isLoading={isLoading}
-              />
-            </Box>
-          </FormControl>
-        )}
+              </Box>
+            )}
+            <LetButton
+              disabled={!user}
+              onClick={handleSendQuestion}
+              title={isAdmin ? "Enviar resposta" : "Enviar mensagem"}
+              type="submit"
+              isLoading={isLoading}
+            />
+          </Box>
+        </FormControl>
 
         <Box mt={"32px"} display={"flex"} flexDir={"column"}>
           {questions.length === 0 ? (
