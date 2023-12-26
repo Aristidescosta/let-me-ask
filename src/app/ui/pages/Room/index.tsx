@@ -368,7 +368,6 @@ export const Room: React.FC<IRoomProps> = ({
             placeholder="O que você quer perguntar?"
             onChange={(event) => setNewQuestion(event.target.value)}
             value={newQuestion}
-            /* color={"black"} */
           />
 
           <Box

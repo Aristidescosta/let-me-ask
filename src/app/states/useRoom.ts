@@ -52,7 +52,7 @@ export const useRoom = (roomId: string | undefined) => {
             }
           );
 
-          setQuestions(parseQuestions);
+          setQuestions(parseQuestions.reverse());
           setTitleRoom(databaseRoom.title);
         }
       });
