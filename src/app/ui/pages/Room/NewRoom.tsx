@@ -1,9 +1,10 @@
 import React from "react";
-import { BaseLayoutPage } from "../BaseLayoutPage";
+
 import { createRoom } from "../../../repository/RoomRepository";
+import { useToastMessage } from "../../../chakra-ui-api/toast";
 import { ROOM_REF } from "../../../utils/constants";
 import { IRoomType } from "../../../types/RoomType";
-import { useToastMessage } from "../../../chakra-ui-api/toast";
+import { BaseLayoutPage } from "../BaseLayoutPage";
 
 export const NewRoom: React.FC = () => {
   const { toastMessage, ToastStatus } = useToastMessage();

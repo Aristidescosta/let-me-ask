@@ -12,8 +12,8 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 
-import illustration from "../../../../public/illustration.svg";
-import logo from "../../../../public/logo.svg";
+import illustration from "/illustration.svg";
+import logo from "/logo.svg";
 
 import { useToastMessage } from "../../chakra-ui-api/toast";
 import { useNavigateTo } from "../../react-router-dom";

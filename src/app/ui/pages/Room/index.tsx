@@ -23,22 +23,25 @@ import {
 
 import { StorageEnum, deleteData } from "../../../databases/LocalStorageDao";
 import { createQuestion } from "../../../repository/RoomRepository";
+import { ROOM_REF, ROUTE_HOME } from "../../../utils/constants";
 import { useToastMessage } from "../../../chakra-ui-api/toast";
 import { signOut } from "../../../repository/AuthRepository";
 import { IQuestionType } from "../../../types/QuestionType";
+import { useNavigateTo } from "../../../react-router-dom";
 import { LetButton } from "../../components/LetButton";
 import { RoomCode } from "../../components/RoomCode";
 import { Question } from "../../components/Question";
-import logoImg from "../../../../../public/logo.svg";
-import { ROOM_REF, ROUTE_HOME } from "../../../utils/constants";
 import { useRoom } from "../../../states/useRoom";
 import { useAuth } from "../../../states/useAuth";
+import emptyQuestions from "/empty-questions.svg";
 import {
   likeQuestion,
   removeLikeQuestion,
 } from "../../../repository/QuestionRepository";
 import { ModalDelete } from "./ModalDelete";
-import { useNavigateTo } from "../../../react-router-dom";
+import logoImg from "/logo.svg";
+
+
 type IRoomParams = {
   id: string;
 };
@@ -276,9 +279,9 @@ export const Room: React.FC<IRoomProps> = ({
       .finally(() => setIsLoadingSignOut(false));
   };
 
-  const handleSwitchRoom = () =>{
-    navigateTo(ROUTE_HOME.route)
-  }
+  const handleSwitchRoom = () => {
+    navigateTo(ROUTE_HOME.route);
+  };
 
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -448,7 +451,7 @@ export const Room: React.FC<IRoomProps> = ({
           {questions.length === 0 ? (
             <Center flexDir={"column"} gap={4}>
               <Image
-                src="/empty-questions.svg"
+                src={emptyQuestions}
                 bgSize={"cover"}
                 h={"8rem"}
                 w={"8rem"}

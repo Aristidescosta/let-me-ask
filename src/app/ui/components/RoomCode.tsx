@@ -1,7 +1,7 @@
 import { Box, Button, Image, Text } from "@chakra-ui/react";
 import React from "react";
 
-import copyImage from "../../../../public/copy.svg";
+import copyImage from "/copy.svg";
 
 interface IRoomCodeProps {
   code: string | undefined;
