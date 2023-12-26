@@ -14,6 +14,7 @@ import {
   Textarea,
   Tooltip,
   useColorMode,
+  useColorModeValue,
   useMediaQuery,
 } from "@chakra-ui/react";
 
@@ -274,6 +275,8 @@ export const Room: React.FC<IRoomProps> = ({
   };
 
   const { colorMode, toggleColorMode } = useColorMode()
+  
+  const color = useColorModeValue('#29292e', '#ffffffeb')
 
   return (
     <Box>
@@ -337,7 +340,7 @@ export const Room: React.FC<IRoomProps> = ({
 
       <Box as="main" maxW={800} margin={"0 auto"} p={isLessThan767 ? 4 : 0} display={"flex"} flexDir={"column"}>
         <Box margin={"32px 0 24px"} display={"flex"} alignItems={"center"}>
-          <Text fontSize={24} color={"#29292e"} as="h1" fontWeight={"bold"}>
+          <Text fontSize={24} color={color} as="h1" fontWeight={"bold"}>
             Sala {titleRoom}
           </Text>
           {questions.length > 0 && (
@@ -359,13 +362,13 @@ export const Room: React.FC<IRoomProps> = ({
         <FormControl>
           <Textarea
             p={"16px"}
-            bgColor={"#fefefe"}
-            boxShadow={"0 2px 12px rgba(0, 0, 0, 0.04)"}
+            boxShadow={"base"}
             minH={130}
             resize={"vertical"}
             placeholder="O que você quer perguntar?"
             onChange={(event) => setNewQuestion(event.target.value)}
             value={newQuestion}
+            /* color={"black"} */
           />
 
           <Box
@@ -399,7 +402,7 @@ export const Room: React.FC<IRoomProps> = ({
                   name={user.name}
                 />
                 <Text
-                  color="#29292e"
+                  color={color}
                   fontWeight={"500"}
                   fontSize={14}
                   as="span"

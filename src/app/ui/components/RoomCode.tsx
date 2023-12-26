@@ -1,14 +1,17 @@
 import { Box, Button, Image, Text } from "@chakra-ui/react";
 import React from "react";
+
 import copyImage from "../../../../public/copy.svg";
 
 interface IRoomCodeProps {
   code: string | undefined;
-  copyRooCodeToClipboard: () => void
+  copyRooCodeToClipboard: () => void;
 }
 
-export const RoomCode: React.FC<IRoomCodeProps> = ({ code, copyRooCodeToClipboard }) => {
-
+export const RoomCode: React.FC<IRoomCodeProps> = ({
+  code,
+  copyRooCodeToClipboard,
+}) => {
   return (
     <Button
       h={"40px"}
@@ -40,6 +43,7 @@ export const RoomCode: React.FC<IRoomCodeProps> = ({ code, copyRooCodeToClipboar
         /* w={"240px"} */
         fontSize={14}
         fontWeight={500}
+        color={"#29292e"}
       >
         Sala #{code}
       </Text>
