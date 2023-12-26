@@ -40,8 +40,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
 
   const { user, setUserAdmin: setUserAdmin } = useAuth();
 
-  const [ isLessThan767 ] = useMediaQuery ( '(max-width: 767px)' ) 
-  
+  const [isLessThan767] = useMediaQuery("(max-width: 767px)");
 
   const { toastMessage, ToastStatus } = useToastMessage();
 
@@ -138,7 +137,13 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
   };
 
   return (
-    <Box display={"flex"} h={"100vh"} alignItems={"stretch"} flexDir={isLessThan767 ? "column" : "row"} gap={isLessThan767 ? 4 : 0}>
+    <Box
+      display={"flex"}
+      h={"100vh"}
+      alignItems={"stretch"}
+      flexDir={isLessThan767 ? "column" : "row"}
+      gap={isLessThan767 ? 4 : 0}
+    >
       <Box
         as="aside"
         bgColor={"#835afc"}
@@ -161,9 +166,9 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
           lineHeight={"42px"}
           mt={16}
         >
-          Crie salas e Q&amp;A ao-vivo
+          Toda a pergunta tem uma resposta
         </Text>
-        <Text>Tire as dúvidas da sua audiência em tempo-real</Text>
+        <Text>Aprenda e compartilhe conhecimento com outras pessoas</Text>
       </Box>
 
       <Box
