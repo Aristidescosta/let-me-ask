@@ -20,6 +20,7 @@ import { useNavigateTo } from "../../react-router-dom";
 import { LetButton } from "../components/LetButton";
 import { IRoomType } from "../../types/RoomType";
 import { useAuth } from "../../states/useAuth";
+import { RxEnter } from "react-icons/rx";
 
 interface IBaseLayoutPageProps {
   isHome?: boolean;
@@ -220,6 +221,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               title={TITLE_BUTTOM}
               mt={4}
               onClick={isHome ? onJoinRoom : onCreateRoom}
+              leftIcon={<RxEnter />}
             />
           </FormControl>
           {!isHome && (
