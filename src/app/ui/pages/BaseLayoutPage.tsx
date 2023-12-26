@@ -9,6 +9,7 @@ import {
   Image,
   Input,
   Text,
+  useMediaQuery,
 } from "@chakra-ui/react";
 
 import illustration from "../../../../public/illustration.svg";
@@ -37,6 +38,9 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
   const TITLE_BUTTOM = isHome ? "Entrar na sala" : "Criar sala";
 
   const { user, setUserAdmin: setUserAdmin } = useAuth();
+
+  const [ isLessThan767 ] = useMediaQuery ( '(max-width: 767px)' ) 
+  
 
   const { toastMessage, ToastStatus } = useToastMessage();
 
@@ -133,7 +137,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
   };
 
   return (
-    <Box display={"flex"} h={"100vh"} alignItems={"stretch"}>
+    <Box display={"flex"} h={"100vh"} alignItems={"stretch"} flexDir={isLessThan767 ? "column" : "row"} gap={isLessThan767 ? 4 : 0}>
       <Box
         as="aside"
         bgColor={"#835afc"}
@@ -147,7 +151,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
         <Image
           src={illustration}
           alt="Ilustração simbolizando perguntas e respostas"
-          maxW={320}
+          /* maxW={320} */
         />
         <Text
           as={"strong"}
@@ -178,6 +182,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
           maxW={320}
           width={"full"}
           gap={4}
+          mb={isLessThan767 ? 12 : 0}
         >
           <Image src={logo} alt="Letmeask" alignSelf={"center"} />
           {!isHome ? (
