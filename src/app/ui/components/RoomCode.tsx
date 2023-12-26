@@ -37,7 +37,7 @@ export const RoomCode: React.FC<IRoomCodeProps> = ({ code, copyRooCodeToClipboar
         alignSelf={"center"}
         flex={1}
         p={"0 16px 0 12px"}
-        w={"240px"}
+        /* w={"240px"} */
         fontSize={14}
         fontWeight={500}
       >

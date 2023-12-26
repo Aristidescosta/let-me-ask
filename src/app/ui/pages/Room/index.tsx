@@ -14,6 +14,7 @@ import {
   Textarea,
   Tooltip,
   useColorMode,
+  useMediaQuery,
 } from "@chakra-ui/react";
 
 import { StorageEnum, deleteData } from "../../../databases/LocalStorageDao";
@@ -74,6 +75,7 @@ export const Room: React.FC<IRoomProps> = ({
   const { user, userAdmin } = useAuth();
   const { navigateTo } = useNavigateTo();
 
+  const [ isLessThan767 ] = useMediaQuery( '(max-width: 767px)' ) 
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [newQuestion, setNewQuestion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -275,7 +277,7 @@ export const Room: React.FC<IRoomProps> = ({
 
   return (
     <Box>
-      <Box as="header" padding={24} borderBottom={"1px solid #e2e2e2"}>
+      <Box as="header" padding={ isLessThan767 ? 4 : 24} borderBottom={"1px solid #e2e2e2"}>
         <Box maxW={1120} margin={"0 auto"}>
           <Box
             display={"flex"}
@@ -312,9 +314,10 @@ export const Room: React.FC<IRoomProps> = ({
             display={"flex"}
             justifyContent={"space-between"}
             alignItems={"center"}
+            flexDir={isLessThan767 ? "column" : "row"}
           >
             <Image src={logoImg} alt="logo do let me ask" maxH={45} />
-            <Box display={"flex"} alignItems={"center"} gap={4}>
+            <Box display={"flex"} alignItems={"center"} gap={2} p={isLessThan767 ? 2 : 0}>
               <RoomCode
                 code={roomId}
                 copyRooCodeToClipboard={copyRooCodeToClipboard}
@@ -332,7 +335,7 @@ export const Room: React.FC<IRoomProps> = ({
         </Box>
       </Box>
 
-      <Box as="main" maxW={800} margin={"0 auto"}>
+      <Box as="main" maxW={800} margin={"0 auto"} p={isLessThan767 ? 4 : 0} display={"flex"} flexDir={"column"}>
         <Box margin={"32px 0 24px"} display={"flex"} alignItems={"center"}>
           <Text fontSize={24} color={"#29292e"} as="h1" fontWeight={"bold"}>
             Sala {titleRoom}
