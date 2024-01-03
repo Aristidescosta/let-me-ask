@@ -68,7 +68,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               });
             } else {
               setUserAdmin(true);
-              navigateTo(`/admin/rooms/${newRoom}`);
+              navigateTo(`/admin/rooms/${response}`);
             }
           })
           .catch((error) => {
