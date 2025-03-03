@@ -77,7 +77,7 @@ export const Room: React.FC<IRoomProps> = ({
   const { id: roomId } = useParams<IRoomParams>();
 
   const { toastMessage, ToastStatus } = useToastMessage();
-  const { questions, titleRoom } = useRoom(roomId);
+  const { questions, titleRoom, messageError } = useRoom(roomId);
   const { user, userAdmin } = useAuth();
   const { navigateTo } = useNavigateTo();
 
@@ -96,6 +96,17 @@ export const Room: React.FC<IRoomProps> = ({
       navigateTo(`/rooms/${roomId}`);
     }
   }, [userAdmin]);
+
+  useEffect(() => {
+    if (messageError) {
+      toastMessage({
+        title: messageError,
+        statusToast: ToastStatus.ERROR,
+        position: "top-right",
+      });
+      navigateTo(`/`);
+    }
+  })
 
   const copyRooCodeToClipboard = useCallback(() => {
     if (roomId) {
@@ -395,9 +406,8 @@ export const Room: React.FC<IRoomProps> = ({
             boxShadow={"base"}
             minH={130}
             resize={"vertical"}
-            placeholder={`O que você quer ${
-              isAdmin ? "responder" : "perguntar"
-            }?`}
+            placeholder={`O que você quer ${isAdmin ? "responder" : "perguntar"
+              }?`}
             onChange={(event) => setNewQuestion(event.target.value)}
             value={newQuestion}
           />

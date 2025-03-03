@@ -205,11 +205,11 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
             <>
               <Button
                 aria-label="Botão para entrar com a google"
-                leftIcon={<FaGoogle />}
+                leftIcon={!user ? <FaGoogle /> : undefined}
                 colorScheme="red"
                 onClick={handleSignInWithGoogle}
               >
-                Crie sua sala com o Google
+                { user ? "Crie sua sala" : "Entrar com o Google" }
               </Button>
 
               <Text>Ou entre em uma sala</Text>

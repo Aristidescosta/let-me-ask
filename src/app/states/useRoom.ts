@@ -25,13 +25,15 @@ type TQuestionProps = IQuestionType & {
 export const useRoom = (roomId: string | undefined) => {
   const [titleRoom, setTitleRoom] = useState("");
   const [questions, setQuestions] = useState<TQuestionProps[]>([]);
+  const [messageError, setMessageError] = useState<string | null>(null);
 
   const { user } = useAuth()
 
   useEffect(() => {
     if (roomId) {
       getAllQuestions(ROOM_REF, roomId).then((response) => {
-        if (typeof response === "string") console.log(response);
+        console.log("Pegando todas as perguntas para sala: ", roomId, ROOM_REF)
+        if (typeof response === "string") setMessageError(response);
         else {
           const databaseRoom = response.val();
 
@@ -51,7 +53,7 @@ export const useRoom = (roomId: string | undefined) => {
               };
             }
           );
-
+          console.log(parseQuestions, 'questions')
           setQuestions(parseQuestions.reverse());
           setTitleRoom(databaseRoom.title);
         }
@@ -59,5 +61,5 @@ export const useRoom = (roomId: string | undefined) => {
     }
   }, [roomId, questions, user?.id]);
 
-  return { questions, titleRoom }
+  return { questions, titleRoom, messageError }
 }
