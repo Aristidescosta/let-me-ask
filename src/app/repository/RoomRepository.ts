@@ -27,12 +27,22 @@ export const createRoom = (roomReference: string, room: IRoomType): Promise<stri
   })
 }
 
+const isValidRoomCode = (code: string): boolean => {
+  // O código não pode estar vazio e não pode conter caracteres inválidos
+  return !!code.trim() && !/[.#$[\]]/.test(code);
+};
+
 export const joinRoom = (roomReference: string, roomCode: string): Promise<DataSnapshot | string> => {
   return new Promise((resolve, reject) => {
     try {
       if (roomCode.trim() === "") {
-        resolve("Informe o código da sala")
+        return resolve("Informe o código da sala")
       }
+
+      if (!isValidRoomCode(roomCode)) {
+        return resolve("Código da sala inválido. Verifique e tente novamente.");
+      }
+
       const PATH = `/${roomReference}/${roomCode}`
       joinRoomDAO(PATH)
         .then((response) => {

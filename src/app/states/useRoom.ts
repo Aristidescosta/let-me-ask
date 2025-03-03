@@ -33,7 +33,7 @@ export const useRoom = (roomId: string | undefined) => {
     if (roomId) {
       getAllQuestions(ROOM_REF, roomId).then((response) => {
         console.log("Pegando todas as perguntas para sala: ", roomId, ROOM_REF)
-        if (typeof response === "string") setMessageError(response);
+        if (typeof response === "string") setMessageError(response + " ou fechada pelo proprietario");
         else {
           const databaseRoom = response.val();
 
