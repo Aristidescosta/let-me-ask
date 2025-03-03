@@ -32,7 +32,6 @@ export const useRoom = (roomId: string | undefined) => {
   useEffect(() => {
     if (roomId) {
       getAllQuestions(ROOM_REF, roomId).then((response) => {
-        console.log("Pegando todas as perguntas para sala: ", roomId, ROOM_REF)
         if (typeof response === "string") setMessageError(response + " ou fechada pelo proprietario");
         else {
           const databaseRoom = response.val();
@@ -53,7 +52,6 @@ export const useRoom = (roomId: string | undefined) => {
               };
             }
           );
-          console.log(parseQuestions, 'questions')
           setQuestions(parseQuestions.reverse());
           setTitleRoom(databaseRoom.title);
         }

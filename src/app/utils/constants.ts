@@ -6,3 +6,5 @@ export const ROUTE_HOME = { route: "/" }
 export const ROUTE_ROOM = { route: "/rooms/:id" }
 export const ROUTE_NEW_ROOM = { route: "/rooms/new" }
 export const ROUTE_ADMIN_ROOM = { route: "/admin/rooms/:id" }
+
+export const DEFAULT_ROOM_CODE = "-OKQjbc4uMuofAaDOde4"; 

@@ -21,6 +21,8 @@ import { LetButton } from "../components/LetButton";
 import { IRoomType } from "../../types/RoomType";
 import { useAuth } from "../../states/useAuth";
 import { RxEnter } from "react-icons/rx";
+import { MdFeedback } from "react-icons/md";
+import { DEFAULT_ROOM_CODE } from "../../utils/constants";
 
 interface IBaseLayoutPageProps {
   isHome?: boolean;
@@ -37,6 +39,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
 }) => {
   const TITLE_ROOM = isHome ? "Código da sala" : "Nome da sala";
   const TITLE_BUTTOM = isHome ? "Entrar na sala" : "Criar sala";
+  const TITLE_OF_BUTTOM_DEFAULT_ROOM = "Sala de Feedback"
 
   const { user, setUserAdmin: setUserAdmin } = useAuth();
 
@@ -95,10 +98,10 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
     }
   };
 
-  const onJoinRoom = () => {
+  const onJoinRoom = (toDefaultRoom?: boolean) => {
     try {
       setIsLoading(true);
-      handleJoinRoom?.(newRoom)
+      handleJoinRoom?.(toDefaultRoom ? DEFAULT_ROOM_CODE : newRoom)
         .then((response) => {
           if (typeof response === "string") {
             toastMessage({
@@ -108,9 +111,9 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
             });
           } else if (response.authorId === user?.id) {
             setUserAdmin(true);
-            navigateTo(`/admin/rooms/${newRoom}`);
+            navigateTo(`/admin/rooms/${toDefaultRoom ? DEFAULT_ROOM_CODE : newRoom}`);
           } else {
-            navigateTo(`/rooms/${newRoom}`);
+            navigateTo(`/rooms/${toDefaultRoom ? DEFAULT_ROOM_CODE : newRoom}`);
             setUserAdmin(false);
           }
         })
@@ -209,7 +212,7 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
                 colorScheme="red"
                 onClick={handleSignInWithGoogle}
               >
-                { user ? "Crie sua sala" : "Entrar com o Google" }
+                {user ? "Crie sua sala" : "Entrar com o Google"}
               </Button>
 
               <Text>Ou entre em uma sala</Text>
@@ -222,13 +225,26 @@ export const BaseLayoutPage: React.FC<IBaseLayoutPageProps> = ({
               onChange={(e) => setNewRoom(e.target.value)}
               value={newRoom}
             />
-            <LetButton
-              isLoading={isLoading}
-              title={TITLE_BUTTOM}
-              mt={4}
-              onClick={isHome ? onJoinRoom : onCreateRoom}
-              leftIcon={<RxEnter />}
-            />
+            <Box display={"flex"} gap={2} alignItems={"center"} justifyContent={"center"}>
+              <LetButton
+                isLoading={isLoading}
+                title={TITLE_BUTTOM}
+                mt={4}
+                onClick={isHome ? () => onJoinRoom(false) : onCreateRoom}
+                leftIcon={<RxEnter />}
+              />
+              {
+                isHome && (
+                  <LetButton
+                    isLoading={isLoading}
+                    title={TITLE_OF_BUTTOM_DEFAULT_ROOM}
+                    mt={4}
+                    onClick={() => onJoinRoom(true)}
+                    leftIcon={<MdFeedback />}
+                  />
+                )
+              }
+            </Box>
           </FormControl>
           {!isHome && (
             <Text>
