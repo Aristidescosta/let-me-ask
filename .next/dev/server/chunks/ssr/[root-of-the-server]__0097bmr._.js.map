@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 13, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/arist/OneDrive/Documentos/work/let-me-ask/src/app/favicon.ico.mjs%20%28structured%20image%20object%29"],"sourcesContent":["import src from \"IMAGE\";\nexport default { src, width: 256, height: 256 }\n"],"names":["src","width","height"],"mappings":";;;;AAAA;;uCACe;IAAEA,KAAAA,0IAAG;IAAEC,OAAO;IAAKC,QAAQ;AAAI"}},
+    {"offset": {"line": 28, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/arist/OneDrive/Documentos/work/let-me-ask/src/app/admin/rooms/%5Bid%5D/page.tsx"],"sourcesContent":["interface AdminRoomPageProps {\n  params: Promise<{ id: string }>;\n}\n\nexport default async function AdminRoomPage({ params }: AdminRoomPageProps) {\n  const { id } = await params;\n\n  return (\n    <main className=\"flex flex-1 items-center justify-center min-h-screen\">\n      <p className=\"text-zinc-500\">Admin — Sala {id} — em construção</p>\n    </main>\n  );\n}\n"],"names":["AdminRoomPage","params","id","className"],"mappings":";;;;;;AAIe,eAAeA,cAAc,EAAEC,MAAM,EAAsB;IACxE,MAAM,EAAEC,EAAE,EAAE,GAAG,MAAMD;IAErB,qBACE,8OAAC;QAAKE,WAAU;kBACd,cAAA,8OAAC;YAAEA,WAAU;;gBAAgB;gBAAcD;gBAAG;;;;;;;;;;;;AAGpD"}}]
+}
