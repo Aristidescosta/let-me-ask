@@ -59,7 +59,7 @@ export const useRoom = (roomId: string | undefined) => {
         }
       });
     }
-  }, [roomId, questions, user?.id]);
+  }, [roomId, user?.id]); // 'questions' removido — causava loop infinito
 
   return { questions, titleRoom, messageError }
 }
