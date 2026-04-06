@@ -14,6 +14,8 @@ dist-ssr
 .claude
 .next
 .firebase
+.env
+.env.local
 
 # Editor directories and files
 .vscode/*

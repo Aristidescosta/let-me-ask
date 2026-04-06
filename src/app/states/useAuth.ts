@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from 'zustand'
 import { IUserType } from '../types/UserType'
 import { devtools, persist } from 'zustand/middleware'
